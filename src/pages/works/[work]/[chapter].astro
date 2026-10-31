@@ -30,6 +30,15 @@ const sIdx = seriesGroup ? seriesGroup.works.findIndex((w) => w.slug === work.sl
 const prevWork = seriesGroup?.works[sIdx - 1];
 const nextWork = seriesGroup?.works[sIdx + 1];
 
+// 文末左右翻页：先找本作的上/下一章；到头了就接系列的上/下一篇
+type Link = { href: string; label: string; title: string };
+const prevLink: Link | undefined = prev
+  ? { href: chapterUrl(prev), label: ui.prevChapter, title: prev.data.title }
+  : prevWork ? { href: prevWork.url, label: ui.prevInSeries, title: prevWork.title } : undefined;
+const nextLink: Link | undefined = next
+  ? { href: chapterUrl(next), label: ui.nextChapter, title: next.data.title }
+  : nextWork ? { href: nextWork.url, label: ui.nextInSeries, title: nextWork.title } : undefined;
+
 // 同 CP 的其他作品（最近 5 篇，排除同系列已列出的）
 const all = await loadWorks();
 const inSeries = new Set(seriesGroup?.works.map((w) => w.slug) ?? []);
@@ -77,65 +86,84 @@ const related = work.cps.length
   </article>
 
   <div class="article-foot">
-    {multi && (
-      <nav class="chapter-nav" aria-label="章节导航">
-        {prev && <a class="prev" href={chapterUrl(prev)} rel="prev"><span class="label">← {ui.prevChapter}</span><span class="t">{prev.data.title}</span></a>}
-        {next && <a class="next" href={chapterUrl(next)} rel="next"><span class="label">{ui.nextChapter} →</span><span class="t">{next.data.title}</span></a>}
+    {(prevLink || nextLink) && (
+      <nav class="pn" aria-label="翻页">
+        {prevLink && (
+          <a class="pn-prev" href={prevLink.href} rel="prev">
+            <span class="label">{prevLink.label}</span>
+            <span class="pn-t"><span class="arrow" aria-hidden="true">←</span>{prevLink.title}</span>
+          </a>
+        )}
+        {nextLink && (
+          <a class="pn-next" href={nextLink.href} rel="next">
+            <span class="label">{nextLink.label}</span>
+            <span class="pn-t">{nextLink.title}<span class="arrow" aria-hidden="true">→</span></span>
+          </a>
+        )}
       </nav>
     )}
 
-    {multi && (
-      <section class="foot-block">
-        <span class="label">{ui.allChapters}</span>
-        <ol class="toc">
-          {chapters.map((c, i) => (
-            <li class={c.slug === chapter.slug ? 'current' : ''}>
-              <span class="no">{String(i + 1).padStart(2, '0')}</span>
-              {c.slug === chapter.slug ? <span aria-current="page">{c.data.title}</span> : <a href={chapterUrl(c)}>{c.data.title}</a>}
-            </li>
-          ))}
-        </ol>
-      </section>
-    )}
+    <div class="drawers">
+      {multi && (
+        <details class="drawer">
+          <summary>
+            <span class="d-t">{ui.allChapters}</span>
+            <span class="d-m">{chapters.length} {ui.chapters}</span>
+            <span class="d-i" aria-hidden="true"></span>
+          </summary>
+          <ol class="toc">
+            {chapters.map((c, i) => (
+              <li class={c.slug === chapter.slug ? 'current' : ''}>
+                <span class="no">{String(i + 1).padStart(2, '0')}</span>
+                {c.slug === chapter.slug ? <span aria-current="page">{c.data.title}</span> : <a href={chapterUrl(c)}>{c.data.title}</a>}
+              </li>
+            ))}
+          </ol>
+        </details>
+      )}
 
-    {seriesGroup && (
-      <section class="foot-block">
-        <span class="label">{ui.inSeries}</span>
-        <h2><a href={seriesUrl(seriesGroup.name)}>{seriesGroup.name}</a></h2>
-        <ol class="toc">
-          {seriesGroup.works.map((w, i) => (
-            <li class={w.slug === work.slug ? 'current' : ''}>
-              <span class="no">{String(w.seriesOrder ?? i + 1).padStart(2, '0')}</span>
-              {w.slug === work.slug ? <span aria-current="page">{w.title}</span> : <a href={w.url}>{w.title}</a>}
-              <span class="m meta"><span>{ui.words(w.words)}</span></span>
-            </li>
-          ))}
-        </ol>
-        {(prevWork || nextWork) && (
-          <nav class="chapter-nav" style="margin-top:24px" aria-label="系列导航">
-            {prevWork && <a class="prev" href={prevWork.url}><span class="label">← {ui.prevInSeries}</span><span class="t">{prevWork.title}</span></a>}
-            {nextWork && <a class="next" href={nextWork.url}><span class="label">{ui.nextInSeries} →</span><span class="t">{nextWork.title}</span></a>}
-          </nav>
-        )}
-      </section>
-    )}
+      {seriesGroup && (
+        <details class="drawer">
+          <summary>
+            <span class="d-t"><span class="d-k">{ui.inSeries}</span>{seriesGroup.name}</span>
+            <span class="d-m">{ui.seriesPart(work.seriesOrder ?? sIdx + 1)} / {ui.works(seriesGroup.works.length)}</span>
+            <span class="d-i" aria-hidden="true"></span>
+          </summary>
+          <ol class="toc">
+            {seriesGroup.works.map((w, i) => (
+              <li class={w.slug === work.slug ? 'current' : ''}>
+                <span class="no">{String(w.seriesOrder ?? i + 1).padStart(2, '0')}</span>
+                {w.slug === work.slug ? <span aria-current="page">{w.title}</span> : <a href={w.url}>{w.title}</a>}
+                <span class="m meta"><span>{ui.words(w.words)}</span></span>
+              </li>
+            ))}
+          </ol>
+          <p class="drawer-more"><a href={seriesUrl(seriesGroup.name)}>{ui.viewSeries} →</a></p>
+        </details>
+      )}
 
-    {related.length > 0 && (
-      <section class="foot-block">
-        <span class="label"><a href={cpUrl(work.cps[0])}>{ui.moreFromCp(work.cps.join(' / '))}</a></span>
-        <ul class="toc">
-          {related.map((w) => (
-            <li>
-              <a href={w.url}>{w.title}</a>
-              <span class="m meta">{w.updated && <span>{fmtDate(w.updated)}</span>}<span>{ui.words(w.words)}</span></span>
-            </li>
-          ))}
-        </ul>
-      </section>
-    )}
+      {related.length > 0 && (
+        <details class="drawer">
+          <summary>
+            <span class="d-t">{ui.moreFromCp(work.cps.join(' / '))}</span>
+            <span class="d-m">{ui.works(related.length)}</span>
+            <span class="d-i" aria-hidden="true"></span>
+          </summary>
+          <ul class="toc">
+            {related.map((w) => (
+              <li>
+                <a href={w.url}>{w.title}</a>
+                <span class="m meta">{w.updated && <span>{fmtDate(w.updated)}</span>}<span>{ui.words(w.words)}</span></span>
+              </li>
+            ))}
+          </ul>
+          <p class="drawer-more"><a href={cpUrl(work.cps[0])}>{ui.viewCp(work.cps[0])} →</a></p>
+        </details>
+      )}
+    </div>
   </div>
 
-  <script is:inline define:vars={{ prevHref: prev ? chapterUrl(prev) : null, nextHref: next ? chapterUrl(next) : null }}>
+  <script is:inline define:vars={{ prevHref: prevLink?.href ?? null, nextHref: nextLink?.href ?? null }}>
     // 阅读进度条
     const bar = document.querySelector('.progress');
     const body = document.querySelector('.chapter-body');

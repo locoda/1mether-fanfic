@@ -486,30 +486,81 @@ footer .copy { width: 100%; font-family: var(--sans); font-size: 12px; color: va
 
 /* ---------------- After the story ---------------- */
 .article-foot { max-width: var(--measure); margin: 72px auto 0; }
-.chapter-nav {
+
+/* 翻页：上一章靠左、下一章靠右 */
+.pn {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 24px;
-  padding: 20px 0;
+  padding: 24px 0 28px;
   border-top: 1px solid var(--rule);
-  border-bottom: 1px solid var(--hair);
 }
-.chapter-nav a { display: block; line-height: 1.5; }
-.chapter-nav .t { font-family: var(--display); font-size: 20px; }
-.chapter-nav a:hover .t { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.14em; }
-.chapter-nav .label { display: block; margin-bottom: 4px; color: var(--muted); }
-.chapter-nav .next { text-align: right; grid-column: 2; }
-
-.foot-block { margin-top: 56px; }
-.foot-block > .label { display: block; padding-bottom: 10px; border-bottom: 1px solid var(--rule); }
-.foot-block h2 {
-  margin: 16px 0 6px;
+.pn a { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.pn-prev { grid-column: 1; align-items: flex-start; text-align: left; }
+.pn-next { grid-column: 2; align-items: flex-end; text-align: right; }
+.pn .label { color: var(--muted); }
+.pn-t {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 10px;
   font-family: var(--display);
-  font-weight: 400;
-  font-size: 28px;
+  font-size: clamp(20px, 2.6vw, 26px);
   line-height: 1.3;
 }
-.foot-block h2 a:hover { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.14em; }
+.pn .arrow { font-family: var(--sans); font-size: 0.75em; transition: transform 0.2s; }
+.pn-prev:hover .arrow { transform: translateX(-4px); }
+.pn-next:hover .arrow { transform: translateX(4px); }
+.pn a:hover .pn-t { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.16em; }
+
+/* 可展开的抽屉：全部章节 / 系列 / 更多推荐 */
+.drawers { border-top: 1px solid var(--rule); }
+.drawer { border-bottom: 1px solid var(--hair); }
+.drawer summary {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 0;
+  cursor: pointer;
+  list-style: none;
+}
+.drawer summary::-webkit-details-marker { display: none; }
+.drawer .d-t {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--display);
+  font-size: 20px;
+  line-height: 1.35;
+}
+.drawer .d-k {
+  display: block;
+  margin-bottom: 2px;
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--muted);
+}
+.drawer .d-m { font-family: var(--sans); font-size: 12px; color: var(--muted); white-space: nowrap; }
+/* ＋ / − 图标 */
+.drawer .d-i { position: relative; flex: none; width: 14px; height: 14px; }
+.drawer .d-i::before, .drawer .d-i::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; top: 50%;
+  height: 1.5px;
+  margin-top: -0.75px;
+  background: var(--ink);
+  transition: transform 0.2s;
+}
+.drawer .d-i::after { transform: rotate(90deg); }
+.drawer[open] .d-i::after { transform: rotate(0deg); }
+.drawer summary:hover .d-t { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.16em; }
+.drawer > .toc { margin-bottom: 8px; border-top: 1px solid var(--hair); }
+.drawer > .toc li:last-child { border-bottom: 0; }
+.drawer-more { margin: 0 0 20px; font-family: var(--sans); font-size: 13px; }
+.drawer-more a { border-bottom: 1px solid var(--ink); }
+.drawer-more a:hover { color: var(--muted); border-color: var(--muted); }
+
 .toc { list-style: none; margin: 0; padding: 0; }
 .toc li {
   display: flex;
@@ -539,8 +590,8 @@ footer .copy { width: 100%; font-family: var(--sans); font-size: 12px; color: va
   .story .side span + span::before { content: "·"; margin: 0 0.6em; }
   .chapter-body { font-size: 18px; line-height: 1.85; }
   .chapter-body p.lead::first-letter { font-size: 3.4em; }
-  .chapter-nav { grid-template-columns: 1fr; gap: 16px; }
-  .chapter-nav .next { grid-column: 1; text-align: left; }
+  .pn { gap: 16px; }
+  .pn-t { font-size: 18px; }
   .toc .m { display: none; }
 }
 @media print {
