@@ -161,7 +161,18 @@ export function loadWorks(): Promise<WorkInfo[]> {
         dek: d.summary ?? (site.features.autoSummary ? excerpt(chapters[0].entry.body ?? '') : ''),
       };
     });
-    return infos.sort((a, b) => (b.updated?.getTime() ?? 0) - (a.updated?.getTime() ?? 0) || a.title.localeCompare(b.title, 'zh'));
+    // 首页排序：有日期的按时间倒序；没日期（或日期无效）的统一排在最后，再按标题排。
+    // 不直接用 ?? 0，因为无效日期的 getTime() 是 NaN，NaN 进比较器会打乱顺序。
+    const time = (d?: Date) => {
+      const t = d?.getTime();
+      return typeof t === 'number' && !Number.isNaN(t) ? t : -Infinity;
+    };
+    return infos.sort((a, b) => {
+      const ta = time(a.updated);
+      const tb = time(b.updated);
+      if (ta !== tb) return tb - ta;
+      return a.title.localeCompare(b.title, 'zh');
+    });
   })();
   return cache;
 }
