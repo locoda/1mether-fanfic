@@ -175,40 +175,14 @@ updated: 2026-10-28
 
 ## 部署到 GitHub Pages
 
-1. 改 `astro.config.mjs`：
+1. 把 `.github/workflows/deploy.yml.example` 改名为 `deploy.yml`（去掉 `.example`）。
+2. 改 `astro.config.mjs`：
    - 仓库叫 `<用户名>.github.io`：`base` 保持 `'/'`；
    - 其他仓库名（网址是 `<用户名>.github.io/<仓库名>/`）：`base: '/<仓库名>/'`；
    - 两种都加上 `site: 'https://<用户名>.github.io'`。
-2. 新建 `.github/workflows/deploy.yml`：
-
-```yaml
-name: Deploy to GitHub Pages
-on:
-  push:
-    branches: [main]
-  workflow_dispatch:
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: withastro/action@v3
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
-```
-
 3. 仓库 Settings → Pages → Source 选 **GitHub Actions**。
+
+之后每次推送到 main 都会自动部署。用 Cloudflare Pages 的话不用管这个文件，它不会运行。
 
 > 国内访问 github.io 和 pages.dev 都不太稳定。想让国内读者访问更顺，可以买一个自己的域名绑定到 Cloudflare Pages。
 
