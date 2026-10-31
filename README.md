@@ -86,7 +86,7 @@ GitHub 用来存放你的网站和作品，网站也直接放在 GitHub Pages �
 - **作者名**：显示在作品标题下面（「文 / 作者名」）和页脚。
 - **网站简介**：别人分享你的链接时会显示这段话。
 - **页脚链接**：比如你的 AO3、微博、Lofter 主页，点「Add an item」一条一条加。
-- **部署到**：保持 GitHub Pages 就行；改用 Cloudflare Pages 时才需要换（见「进阶」）。
+- **部署到**：默认只勾 GitHub Pages。用 Cloudflare Pages 的话勾上它（见「进阶」）；两个都勾就两边都更新，都不勾就暂停更新网站，已经上线的内容不受影响。
 
 **显示设置**：中文字体（几款适合长篇阅读的字体可选）、深色模式、每页显示几篇作品，以及首页头条、首字放大、文末 ♦、阅读进度条、章节菜单这些效果，不喜欢的取消勾选就好。
 
@@ -264,7 +264,7 @@ updated: 2026-10-28
 
 网站设置在 `src/site.yml`，和后台「网站设置」是同一个文件，分三组：`info`（网站信息）、`display`（显示设置）、`works`（作品设置）。没写的项目用默认值，写错了构建时会指出是哪一项（比如 `display.perPage`）。旧版不分组的写法也能读。
 
-**`info` 网站信息**：`title` 站名、`tagline` 页脚小字、`author` 作者名、`description` 简介、`lang` 页面语言、`links` 页脚链接（每项是 `label` + `href`）、`deploy` 部署到哪里（`github` 或 `cloudflare`）。
+**`info` 网站信息**：`title` 站名、`tagline` 页脚小字、`author` 作者名、`description` 简介、`lang` 页面语言、`links` 页脚链接（每项是 `label` + `href`）、`deploy` 部署到哪里（`github`、`cloudflare` 两个开关，可以都开或都关）。
 
 **`display` 显示设置**
 
@@ -309,7 +309,7 @@ updated: 2026-10-28
 
 Cloudflare Pages 支持私有仓库，国内访问有时也更稳。需要一个 [Cloudflare 账号](https://dash.cloudflare.com/sign-up)（免费）。
 
-1. 在后台 **网站设置** → **网站信息** 里，把 **部署到** 选成 **Cloudflare Pages**，保存。这样 GitHub 就不会再重复部署一遍。
+1. 在后台 **网站设置** → **网站信息** → **部署到** 里勾上 **Cloudflare Pages**。只想用 Cloudflare 的话，把 **GitHub Pages** 的勾去掉；两个都勾就两边都有一份。
 2. 登录 [Cloudflare](https://dash.cloudflare.com)，左边菜单选 **Workers & Pages** → **Create application** → **Pages** 标签 → **Import an existing Git repository**。
 3. 连接 GitHub，选中你的仓库，点 **Begin setup**。
 4. **Production branch** 填 `main`，**Build command** 填 `npm run build`，**Build output directory** 填 `dist`。**Project name** 会变成你的网址 `<项目名>.pages.dev`。

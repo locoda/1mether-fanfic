@@ -142,12 +142,11 @@ content:
               - { name: href, label: 网址, type: string }
           - name: deploy
             label: 部署到
-            type: select
-            options:
-              values:
-                - { name: "github", label: GitHub Pages }
-                - { name: "cloudflare", label: Cloudflare Pages }
-            description: 用 Cloudflare Pages 的话选它，GitHub 就不会再重复部署一遍
+            type: object
+            description: 可以都勾；都不勾就暂停更新网站（已经上线的网站不受影响）
+            fields:
+              - { name: github, label: GitHub Pages, type: boolean, default: true }
+              - { name: cloudflare, label: Cloudflare Pages（要先在 Cloudflare 连上仓库）, type: boolean, default: false }
 
       - name: display
         label: 显示设置

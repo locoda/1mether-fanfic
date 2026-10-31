@@ -3,8 +3,7 @@
 #
 # 网址和子路径会自动算好（https://用户名.github.io/仓库名/，或者你绑定的自定义域名），不用改任何配置。
 #
-# 改用 Cloudflare Pages 的话：在网站设置（src/site.yml 的 info.deploy）里把「部署到」选成 Cloudflare Pages，
-# 这个工作流就只做检查、不部署。（旧版的仓库变量 DEPLOY=cloudflare 也照样有效。）
+# 网站设置（src/site.yml 的 info.deploy）里「部署到」没勾 GitHub Pages 时，这个工作流只做检查、不部署。
 name: 部署到 GitHub Pages
 
 on:
@@ -26,7 +25,7 @@ jobs:
   check:
     runs-on: ubuntu-latest
     outputs:
-      target: ${{ steps.target.outputs.target }}
+      github: ${{ steps.target.outputs.github }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -36,12 +35,10 @@ jobs:
           sparse-checkout-cone-mode: false
       - id: target
         run: node scripts/deploy-target.mjs
-        env:
-          DEPLOY: ${{ vars.DEPLOY }}
 
   build:
     needs: check
-    if: needs.check.outputs.target == 'github'
+    if: needs.check.outputs.github == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

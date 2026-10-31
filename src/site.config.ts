@@ -19,7 +19,7 @@ const SiteSchema = z.object({
   lang: opt(z.string(), 'zh-CN'),
   links: opt(z.array(z.object({ label: z.string(), href: z.string() })), []),
   // 只给 GitHub Actions 看（scripts/deploy-target.mjs），网站本身不用
-  deploy: opt(z.enum(['github', 'cloudflare']), 'github'),
+  deploy: opt(z.object({ github: opt(z.boolean(), true), cloudflare: opt(z.boolean(), false) }), {}),
   perPage: opt(z.number().int().positive(), 20),
   readingSpeed: opt(z.number().positive(), 500),
   features: opt(

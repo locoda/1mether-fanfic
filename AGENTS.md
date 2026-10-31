@@ -21,7 +21,7 @@
 - Markdown 用 `@astrojs/markdown-remark` 的 `unified()` 处理器（Astro 7 默认是 Sätteri，但本项目的 rehype 插件依赖 unified）
 - `compressHTML: true`：Astro 7 默认的 `'jsx'` 会删掉行内元素之间的空格，日期 · 字数这类分隔处会变挤
 - 字体自托管：中文字体来自中文网字计划的 npm 包（`@chinese-fonts/*`，按字频切片），默认思源屏显臻宋；西文 Libre Caslon（Fontsource）。不要用 Google Fonts 或外部 CDN，国内读者加载不了
-- 部署：默认 GitHub Pages（`.github/workflows/deploy.yml`）；Cloudflare Pages 是可选项，网站设置 `info.deploy: cloudflare` 时 GitHub Pages 工作流只跑检查、不部署。判断在 `scripts/deploy-target.mjs`（不装依赖，正则读 `deploy:` 一行；旧的仓库变量 `DEPLOY=cloudflare` 也认）
+- 部署：默认 GitHub Pages（`.github/workflows/deploy.yml`）；Cloudflare Pages 是可选项，部署到哪里由网站设置 `info.deploy` 的 `github` / `cloudflare` 两个开关决定（可都开、都关）。判断在 `scripts/deploy-target.mjs`：GitHub 工作流先跑它，`github: false` 时不部署（只检出脚本和 site.yml、不装依赖，所以用逐行解析不用 yaml 库）；Cloudflare 上 `npm run build` 的 `prebuild` 也跑它，`CF_PAGES` 存在而 `cloudflare: false` 时让构建失败，Cloudflare 就不更新。用两个布尔值而不是多选列表，是因为 Pages CMS 会删掉空列表，「都不选」会变回默认值。不读仓库变量
 - 网页后台：Pages CMS（`.pages.yml`）
 
 ## 目录和数据流
@@ -41,7 +41,7 @@ scripts/export-md.mjs             npm run export：yml → export/<作品>.md（
 scripts/lib/work-md.mjs           yml ⇄ md 的转换规则，导入导出共用
 scripts/import-uploads.mjs        后台「批量导入」：imports/ 里的文件 → yml，文件名当作品名
 scripts/rename-works.mjs          时间戳文件名 → 作品名.yml（网址不变才改）
-scripts/deploy-target.mjs         读 site.yml 的 info.deploy，给工作流判断要不要部署到 GitHub Pages
+scripts/deploy-target.mjs         读 site.yml 的 info.deploy，GitHub 工作流和 Cloudflare 构建都靠它判断要不要部署
 scripts/release-name.mjs          「导出作品」工作流的 zip 命名：<仓库名>-works-<日期>.zip
 .github/workflows/deploy.yml      部署到 GitHub Pages
 .github/workflows/import.yml      imports/ 有新文件时运行 import-uploads.mjs，提交后触发部署
@@ -128,7 +128,7 @@ git merge template/main        # 第一次同步要加 --allow-unrelated-histori
 - 下游的 `.gitattributes` 里有 `README.md merge=ours` 和 `src/site.yml merge=ours`，同步时这两个文件自动保留下游版本。所以模板改了 `site.yml` 的结构（比如新增分组或开关）时，同步 PR 里要手动把下游的 `site.yml` 迁移过去，保留下游原来的值
 - 其他冲突：作品保留下游的，代码用模板的；合并进来的 `example-*.yml` 和 `LICENSE` 在下游删掉（MIT 是模板代码的授权，放在下游容易被理解成作品也是 MIT）
 - **同步模板的 PR 必须用「Create a merge commit」合并，不能 squash**，否则和模板的关联会断掉，下次同步要从头解决所有冲突。在 PR 描述开头醒目地写出来
-- 用 Cloudflare 部署的下游站点，同步时在下游 `site.yml` 的 `info` 里写上 `deploy: cloudflare`（`site.yml` 同步时保留下游版本，不会自动带进来），否则合并后 GitHub Pages 工作流会跑起来并失败
+- 用 Cloudflare 部署的下游站点，同步时在下游 `site.yml` 的 `info.deploy` 里写上 `github: false`、`cloudflare: true`（`site.yml` 同步时保留下游版本，不会自动带进来），否则合并后 GitHub Pages 工作流会跑起来并失败
 
 ## 写给用户看的文字
 

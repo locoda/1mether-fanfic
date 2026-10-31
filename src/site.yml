@@ -17,8 +17,10 @@ info:
   #   - label: AO3
   #     href: https://archiveofourown.org/users/xxx
   links: []
-  # 网站部署在哪：github（GitHub Pages）或 cloudflare（Cloudflare Pages）
-  deploy: github
+  # 部署到哪里，可以都勾，也可以都不勾（暂停更新网站）
+  deploy:
+    github: true
+    cloudflare: false
 
 # 显示设置
 display:

@@ -52,16 +52,14 @@ jobs:
           echo "changed=true" >> "$GITHUB_OUTPUT"
 
       # 工作流自己推送的提交不会触发其他工作流，所以要手动触发一次 GitHub Pages 部署。
-      # 用 Cloudflare Pages 的话它会自己检测到推送，不需要这一步。
+      # Cloudflare Pages 会自己检测到推送，不需要这一步；没勾 GitHub Pages 时也跳过。
       - name: 看网站部署在哪
         id: target
         if: steps.commit.outputs.changed == 'true'
         run: node scripts/deploy-target.mjs
-        env:
-          DEPLOY: ${{ vars.DEPLOY }}
 
       - name: 重新部署网站
-        if: steps.commit.outputs.changed == 'true' && steps.target.outputs.target == 'github'
+        if: steps.commit.outputs.changed == 'true' && steps.target.outputs.github == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh workflow run deploy.yml --ref main
