@@ -1,6 +1,6 @@
 ---
 title: "末班车"
-cp: "世界树"
+cp: ["世界树"]
 updated: 2025-06-09
 series: "在平凡日常中流淌着的……"
 seriesOrder: 12

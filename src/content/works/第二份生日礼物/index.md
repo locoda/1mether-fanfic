@@ -1,6 +1,6 @@
 ---
 title: "第二份生日礼物"
-cp: "世界树"
+cp: ["世界树"]
 updated: 2023-02-24
 series: "众所周知，世界树玩得很花。"
 seriesOrder: 10

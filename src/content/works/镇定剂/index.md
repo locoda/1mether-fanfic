@@ -1,6 +1,6 @@
 ---
 title: "镇定剂"
-cp: "岛凉"
+cp: ["岛凉"]
 updated: 2022-10-08
 series: "这里药房，取药免费。"
 seriesOrder: 7
