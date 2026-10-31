@@ -37,6 +37,8 @@ const works = defineCollection({
   loader: glob({ pattern: '*.{yml,yaml}', base: `./${WORKS_DIR}`, generateId: ({ entry }) => entry.replace(/\.ya?ml$/i, '') }),
   schema: z.object({
     title: z.string(),
+    // 作者名：网站设置里打开 customAuthor 后才生效；不写就用网站设置里的作者名
+    author: blank(z.string()),
     // CP：一个或多个，例如 ["世界树", "马北"]
     cp: blank(z.union([z.string(), z.array(z.string())])),
     // 更新日期，决定首页排序

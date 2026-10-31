@@ -24,6 +24,10 @@ export interface Chapter {
 export interface WorkInfo {
   slug: string;
   title: string;
+  /** 署名：打开 customAuthor 且作品写了 author 时用作品的，否则用网站设置的 */
+  author: string;
+  /** 作者和网站作者不同（列表里要单独显示作者） */
+  guestAuthor: boolean;
   cps: string[];
   updated?: Date;
   summary?: string;
@@ -117,9 +121,12 @@ export function loadWorks(): Promise<WorkInfo[]> {
         };
       });
       const words = chapters.reduce((n, c) => n + countWords(c.entry.body ?? ''), 0);
+      const author = (site.features.customAuthor && d.author?.trim()) || site.author;
       return {
         slug,
         title,
+        author,
+        guestAuthor: author !== site.author,
         cps: (Array.isArray(d.cp) ? d.cp : d.cp ? [d.cp] : []).map((x) => x.trim()).filter(Boolean),
         updated: d.updated,
         summary: d.summary,
