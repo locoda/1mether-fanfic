@@ -29,6 +29,11 @@ content:
         type: string
         required: true
 
+      - name: author
+        label: 作者名
+        type: string
+        description: 在网站设置里打开「每篇作品单独写作者名」后才生效；不填就用网站设置里的作者名
+
       - name: cp
         label: CP
         type: string
@@ -147,6 +152,7 @@ content:
           - { name: keyboardNav, label: 键盘 ← → 翻章, type: boolean }
           - { name: related, label: 文末同 CP 推荐, type: boolean }
           - { name: autoSummary, label: 没写简介时自动取正文开头, type: boolean }
+          - { name: customAuthor, label: 每篇作品单独写作者名（合集、合志用）, type: boolean }
           - name: darkMode
             label: 深色模式
             type: select

@@ -32,6 +32,7 @@ const SiteSchema = z.object({
       keyboardNav: opt(z.boolean(), true),
       related: opt(z.boolean(), true),
       autoSummary: opt(z.boolean(), true),
+      customAuthor: opt(z.boolean(), false),
       darkMode: opt(z.enum(['auto', 'system', 'off']), 'auto'),
     }),
     {},

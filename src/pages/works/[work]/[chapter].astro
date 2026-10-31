@@ -63,7 +63,7 @@ const related = f.related && work.cps.length
       {showChapterTitle && (
         <p class="chapter-title">{multi && <span class="no">{String(idx + 1).padStart(2, '0')}</span>}{chapter.title}</p>
       )}
-      {f.byline && <p class="byline">{ui.byline(site.author)}</p>}
+      {(f.byline || work.guestAuthor) && <p class="byline">{ui.byline(work.author)}</p>}
       <div class="meta">
         {work.updated && <time datetime={fmtDate(work.updated)}>{fmtDate(work.updated)}</time>}
         {multi && !f.chapterPicker && <span>{ui.chapterOf(idx + 1, chapters.length)}</span>}

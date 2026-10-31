@@ -44,5 +44,7 @@ features:
   related: true
   # 没写简介（summary）时，列表里自动显示正文开头
   autoSummary: true
+  # 每篇作品可以单独写作者名（合集、合志这类多人的站用）；不写的作品照旧用上面的作者名
+  customAuthor: false
   # 深色模式：auto 跟随系统并显示切换按钮；system 只跟随系统、不显示按钮；off 始终浅色
   darkMode: auto

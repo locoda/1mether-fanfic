@@ -30,7 +30,7 @@ const href = (n: number) => url(n > 1 ? `${n}/` : '');
       )}
       <h2><a href={lead.url}>{lead.title}</a></h2>
       {lead.dek && <p class="dek">{lead.dek}</p>}
-      {site.features.byline && <p class="byline">{ui.byline(site.author)}</p>}
+      {(site.features.byline || lead.guestAuthor) && <p class="byline">{ui.byline(lead.author)}</p>}
       <p class="meta">
         {lead.updated && <span>{fmtDate(lead.updated)}</span>}
         {site.features.wordCount && <span>{ui.words(lead.words)}</span>}
