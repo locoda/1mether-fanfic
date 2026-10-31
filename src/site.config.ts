@@ -1,47 +1,54 @@
-// 整个站点只需要改这一个文件（外加 src/content 里的作品）。
-// Site-wide settings: edit this one file, then add works under src/content.
-export const site = {
-  title: '1mether 的同人站',
-  // 页脚的一行小字，可留空
-  tagline: '同人作品存档',
-  author: '1mether',
-  description: '1mether 的同人作品存档。',
-  // 页面语言，影响排版与读屏
-  lang: 'zh-CN',
-  // 首页上显示的链接，可删可加，例如：{ label: 'AO3', href: 'https://archiveofourown.org/users/xxx' }
-  links: [] as { label: string; href: string }[],
-  // 每页显示多少篇作品（首页、CP 页通用）
-  perPage: 20,
-  // 阅读速度（字/分钟），用来估算阅读时长
-  readingSpeed: 500,
-  // 功能开关：true 打开，false 关闭
-  features: {
-    // 首页第一页把最新一篇做成大标题头条
-    leadStory: true,
-    // 正文第一个字放大（首字下沉）
-    dropCap: true,
-    // 完结章最后一段末尾加 ♦
-    endMark: true,
-    // 章节页顶部的阅读进度条
-    progressBar: true,
-    // 显示字数（列表、系列页、章节页）
-    wordCount: true,
-    // 显示预计阅读时长（章节页、首页头条）
-    readingTime: true,
-    // 标题下的「文 / 作者」署名
-    byline: true,
-    // 多章作品：点「第 N 章 / 共 M 章」弹出章节菜单
-    chapterPicker: true,
-    // 键盘 ← → 翻章
-    keyboardNav: true,
-    // 文末「更多同 CP 作品」推荐
-    related: true,
-    // 没写简介（summary）时，列表里自动显示正文开头
-    autoSummary: true,
-    // 深色模式：'auto' 跟随系统并显示切换按钮；'system' 只跟随系统、不显示按钮；'off' 始终浅色
-    darkMode: 'auto' as 'auto' | 'system' | 'off',
-  },
-};
+// 网站设置在 src/site.yml（也可以在网页后台的「网站设置」里改），这里负责读取并补上默认值。
+// 界面文字（ui）在本文件下半部分，换语言或者改说法时改这里。
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { parse } from 'yaml';
+import { z } from 'astro/zod';
+
+// 网页后台保存时，没填的项目可能写成 "" 或 null，一律当作没写、用默认值
+// （先换成默认值再校验，这样 features 这种嵌套对象里的每一项也会补上默认值）
+const opt = <T extends z.ZodTypeAny>(schema: T, fallback: unknown) =>
+  z.preprocess((v) => (v === '' || v === null || v === undefined ? fallback : v), schema);
+
+const SiteSchema = z.object({
+  title: opt(z.string(), '我的同人站'),
+  tagline: opt(z.string(), ''),
+  author: opt(z.string(), '作者'),
+  description: opt(z.string(), ''),
+  lang: opt(z.string(), 'zh-CN'),
+  links: opt(z.array(z.object({ label: z.string(), href: z.string() })), []),
+  perPage: opt(z.number().int().positive(), 20),
+  readingSpeed: opt(z.number().positive(), 500),
+  features: opt(
+    z.object({
+      leadStory: opt(z.boolean(), true),
+      dropCap: opt(z.boolean(), true),
+      endMark: opt(z.boolean(), true),
+      progressBar: opt(z.boolean(), true),
+      wordCount: opt(z.boolean(), true),
+      readingTime: opt(z.boolean(), true),
+      byline: opt(z.boolean(), true),
+      chapterPicker: opt(z.boolean(), true),
+      keyboardNav: opt(z.boolean(), true),
+      related: opt(z.boolean(), true),
+      autoSummary: opt(z.boolean(), true),
+      darkMode: opt(z.enum(['auto', 'system', 'off']), 'auto'),
+    }),
+    {},
+  ),
+});
+
+function loadSite() {
+  const file = join(process.cwd(), 'src', 'site.yml');
+  const result = SiteSchema.safeParse(parse(readFileSync(file, 'utf8')) ?? {});
+  if (!result.success) {
+    const issues = result.error.issues.map((i) => `  ${i.path.join('.')}: ${i.message}`).join('\n');
+    throw new Error(`src/site.yml 写得不对：\n${issues}`);
+  }
+  return result.data;
+}
+
+export const site = loadSite();
 
 // 界面文字。做成模板后，换语言只改这里。
 export const ui = {
