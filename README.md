@@ -3,7 +3,6 @@
 给自己搭一个放同人文的个人网站：杂志式排版，按 CP、系列整理作品，多章作品可以一章一页地读。**不用会写代码**，全程在网页上点点就能建好，以后在网页后台写文、改设置。网站免费放在 GitHub Pages 上，不用买服务器。
 
 <p>
-  <img src="docs/screenshot-home.jpg" alt="首页" width="62%">
   <img src="docs/screenshot-chapter.jpg" alt="手机上的章节页" width="28%">
 </p>
 
