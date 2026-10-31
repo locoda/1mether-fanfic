@@ -2,13 +2,15 @@ import { defineCollection, z } from 'astro:content';
 
 // 一篇作品 = src/content/works/ 下的一个文件夹：
 //
+//   src/content/works/溶/
+//     index.md   ← 单章作品：作品信息 + 正文，一个文件
+//
 //   src/content/works/性别问题/
-//     index.md   ← 作品信息（标题、CP、日期……），下面不用写正文
-//     正文.md    ← 章节文件，文件名随意
-//     番外.md
+//     index.md   ← 多章作品：只写作品信息
+//     01.md      ← 章节文件，文件名随意，开头写 title 和 order
+//     02.md
 //
 // 章节顺序看 order（1、2、3……），和文件名无关；网址也按 order 生成（/works/性别问题/02/）。
-// 单章作品的章节文件什么都不用写，直接写正文。
 // 两种文件放在同一个集合里，字段都是可选的，必填项在 src/lib/works.ts 里检查。
 // 网页后台（Pages CMS）保存时，没填的字段可能写成 "" 或 null，这里一律当作没写
 const blank = <T extends z.ZodTypeAny>(schema: T) =>
