@@ -1,0 +1,1 @@
+{"devDependencies":{"astro":"4.16.19"},"name":"fanfic-site-template","private":true,"scripts":{"build":"astro build","dev":"astro dev","preview":"astro preview"},"type":"module","version":"0.1.0"}

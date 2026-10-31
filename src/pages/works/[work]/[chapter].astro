@@ -1,0 +1,37 @@
+---
+import Base from '../../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+import { chaptersOf, workSlugOf } from '../../../lib/works';
+
+export async function getStaticPaths() {
+  const chapters = await getCollection('chapters');
+  return chapters.map((c) => ({
+    params: { work: workSlugOf(c.slug), chapter: c.slug.split('/').slice(1).join('/') },
+    props: { chapter: c },
+  }));
+}
+
+const { chapter } = Astro.props;
+const works = await getCollection('works');
+const work = works.find((w) => w.slug === Astro.params.work);
+if (!work) throw new Error(`作品不存在：${Astro.params.work}`);
+const chapters = await chaptersOf(work.slug);
+const idx = chapters.findIndex((c) => c.slug === chapter.slug);
+const prev = idx > 0 ? chapters[idx - 1] : null;
+const next = idx < chapters.length - 1 ? chapters[idx + 1] : null;
+const { Content } = await chapter.render();
+const chapterUrl = (c: typeof chapter) => `${import.meta.env.BASE_URL}works/${work.slug}/${c.slug.split('/').slice(1).join('/')}/`;
+---
+<Base title={`${chapter.data.title} · ${work.data.title}`} description={chapter.data.summary ?? work.data.summary}>
+  <p class="meta"><a href={`${import.meta.env.BASE_URL}works/${work.slug}/`}>← {work.data.title}</a> · 第 {chapter.data.order} 章 / 共 {chapters.length} 章</p>
+  <h1>{chapter.data.title}</h1>
+  {work.data.warnings.length > 0 && (
+    <div class="warnings"><strong>预警：</strong>{work.data.warnings.join('、')}</div>
+  )}
+  <Content />
+  <nav class="chapter-nav">
+    <span>{prev && <a href={chapterUrl(prev)}>← 上一章：{prev.data.title}</a>}</span>
+    <span><a href={`${import.meta.env.BASE_URL}works/${work.slug}/`}>章节目录</a></span>
+    <span class="next">{next && <a href={chapterUrl(next)}>下一章：{next.data.title} →</a>}</span>
+  </nav>
+</Base>
