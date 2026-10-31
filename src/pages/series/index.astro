@@ -1,6 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { ui } from '../../site.config';
+import { site, ui } from '../../site.config';
 import { loadSeries, seriesUrl, fmtDate } from '../../lib/works';
 const series = await loadSeries();
 ---
@@ -20,7 +20,7 @@ const series = await loadSeries();
           <ol>{s.works.map((w) => <li><a href={w.url}>{w.title}</a></li>)}</ol>
           <p class="meta">
             <span>{ui.works(s.works.length)}</span>
-            {s.latest && <span>{fmtDate(s.latest)}</span>}
+            {site.features.updatedDate && s.latest && <span>{fmtDate(s.latest)}</span>}
           </p>
         </section>
       );
