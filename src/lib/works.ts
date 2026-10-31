@@ -98,22 +98,13 @@ export function loadWorks(): Promise<WorkInfo[]> {
       else f.chapters.push(e);
     }
 
-    const infos = [...folders].map(([folder, { index, chapters: files }]): WorkInfo => {
-      let raw = files;
+    const infos = [...folders].map(([folder, { index, chapters: raw }]): WorkInfo => {
       const where = `src/content/works/${folder}/`;
       if (!index) throw new Error(`作品文件夹 ${where} 里缺少 index.md（写标题、CP 等作品信息）`);
       if (!index.data.title) throw new Error(`${where}index.md 需要写 title`);
+      if (raw.length === 0) throw new Error(`作品「${index.data.title}」没有章节：请在 ${where} 下放至少一个章节文件，例如 01.md`);
       const title = index.data.title;
-      const hasText = index.body.trim().length > 0;
-      // 单章作品：正文直接写在 index.md 里；多章作品：index.md 只写信息，章节放在同一文件夹的其他文件里
-      if (hasText && raw.length > 0) {
-        throw new Error(`「${title}」的 ${where}index.md 里写了正文，同一个文件夹里又有章节文件。单章作品把正文写在 index.md；多章作品 index.md 只写作品信息，正文都放进章节文件`);
-      }
-      if (!hasText && raw.length === 0) {
-        throw new Error(`作品「${title}」没有正文：单章作品直接在 ${where}index.md 的作品信息下面写正文；多章作品在 ${where} 里放章节文件`);
-      }
-      if (hasText) raw = [index];
-      const slug = index.slug.split('/')[0];
+      const slug = raw[0].slug.split('/')[0];
       // 章节顺序只看 order，文件名随意。单章作品可以不写 order。
       if (raw.length > 1) {
         const missing = raw.filter((e) => e.data.order === undefined).map((e) => e.id.split('/')[1]);
@@ -127,14 +118,14 @@ export function loadWorks(): Promise<WorkInfo[]> {
       }
       const sorted = raw.sort((a, b) => (a.data.order ?? 1) - (b.data.order ?? 1));
       const chapters: Chapter[] = sorted.map((e, i) => {
-        const order = e === index ? 1 : e.data.order ?? 1;
+        const order = e.data.order ?? 1;
         const key = String(order).padStart(2, '0');
         return {
           entry: e,
           slug: `${slug}/${key}`,
           order,
           key,
-          title: e === index ? title : e.data.title ?? (sorted.length === 1 ? title : `第 ${order} 章`),
+          title: e.data.title ?? (sorted.length === 1 ? title : `第 ${order} 章`),
           url: url(`works/${slug}/${key}/`),
         };
       });
