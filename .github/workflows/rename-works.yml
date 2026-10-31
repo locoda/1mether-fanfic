@@ -1,0 +1,45 @@
+# 网页后台新建的作品，文件名是创建时间（后台生成文件名时会删掉中文）。
+# 这个工作流每天凌晨把它们改名成「作品名.yml」，网址不变。
+# 放在凌晨跑，是为了避开正在后台编辑的时候：编辑中途文件被改名，保存可能出错。
+name: 作品文件改名
+
+on:
+  schedule:
+    - cron: '17 20 * * *' # 北京时间每天 04:17
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: import
+  cancel-in-progress: false
+
+jobs:
+  rename:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+
+      - run: npm ci
+
+      - run: node scripts/rename-works.mjs
+
+      # 网址没变，所以不需要重新部署
+      - name: 提交
+        run: |
+          git add -A src/content/works
+          if git diff --cached --quiet; then
+            echo "没有需要改名的作品"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "chore: 后台新建的作品改用作品名当文件名"
+          git pull --rebase origin main
+          git push

@@ -4,7 +4,7 @@
 //   npm run import -- 草稿/*.txt           一次导入多篇
 //   npm run import -- 新作品.docx --force  覆盖已经存在的同名作品
 //
-// 支持的格式见 scripts/lib/importers.mjs 开头的说明：.md .txt .docx，以及 AO3 下载的 .html。
+// 支持的格式见 scripts/lib/importers.mjs 开头的说明：.md .txt .docx。
 import { writeFile, access } from 'node:fs/promises';
 import { basename, extname, join } from 'node:path';
 import { importFile, SUPPORTED } from './lib/importers.mjs';
