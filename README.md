@@ -1,8 +1,8 @@
 # 1mether 的同人站
 
-https://1mether-fanfic.pages.dev
+https://1mether-fanfic.pages.dev - Cloudflare Pages 会自动部署。
 
-用 [fanfic-site-template](https://github.com/locoda/fanfic-site-template) 搭的，怎么写作品、改设置都看模板的 README。推到 main 后 Cloudflare Pages 会自动部署。
+模板使用 [fanfic-site-template](https://github.com/locoda/fanfic-site-template) ，怎么写作品、改设置都看模板的 README。
 
 作品在 `src/content/works/`，网站设置在 `src/site.yml`，其余代码跟模板保持一致：要改代码就去改模板，再同步过来。
 
@@ -16,5 +16,3 @@ git merge template/main
 ```
 
 README 和 `site.yml` 合并时会自动保留这边的版本（见 `.gitattributes`）。其他文件有冲突的话，作品留这边的，代码用模板的；顺带过来的 `example-*.yml` 和 `LICENSE` 删掉。
-
-同步的 PR 用 merge commit 合并，别用 squash，不然下次同步又得从头解决冲突。
