@@ -1,7 +1,0 @@
----
-title: "覆面系的营业方法"
-cp: ["橘铁"]
-updated: 2022-09-18
-series: "地下爱豆的营业方法论"
-seriesOrder: 4
----

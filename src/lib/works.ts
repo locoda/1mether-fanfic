@@ -1,7 +1,11 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
+import GithubSlugger from 'github-slugger';
 import { site } from '../site.config';
 
-type Entry = CollectionEntry<'works'>;
+type Entry = CollectionEntry<'chapters'>;
+
+// 作品文件夹名 → 网址（和之前的规则一致：小写、去掉标点，中文保留）
+const folderSlug = (folder: string) => new GithubSlugger().slug(folder);
 
 export interface Chapter {
   /** 原始内容条目（render() / body 从这里取） */
@@ -86,38 +90,40 @@ let cache: Promise<WorkInfo[]> | undefined;
 /** 全部作品，按更新时间倒序，带好章节、字数、CP 列表。 */
 export function loadWorks(): Promise<WorkInfo[]> {
   cache ??= (async () => {
-    const entries = await getCollection('works');
-    // 按文件夹分组：<作品文件夹>/index.md 是作品信息，其余 .md 是章节
-    const folders = new Map<string, { index?: Entry; chapters: Entry[] }>();
-    for (const e of entries) {
-      const [folder, file] = e.id.split('/');
-      if (!file) throw new Error(`「${e.id}」放错了位置：每篇作品要放在 src/content/works/ 下自己的文件夹里`);
-      if (!folders.has(folder)) folders.set(folder, { chapters: [] });
-      const f = folders.get(folder)!;
-      if (/^index\.mdx?$/i.test(file)) f.index = e;
-      else f.chapters.push(e);
+    const [infoEntries, chapterEntries] = await Promise.all([getCollection('works'), getCollection('chapters')]);
+    // 按文件夹分组：<作品文件夹>/index.yml 是作品信息，<作品文件夹>/*.md 是章节
+    const byFolder = new Map<string, Entry[]>();
+    for (const e of chapterEntries) {
+      const folder = e.id.split('/')[0];
+      if (!byFolder.has(folder)) byFolder.set(folder, []);
+      byFolder.get(folder)!.push(e);
+    }
+    const infoFolders = new Set(infoEntries.map((e) => e.id.split('/')[0]));
+    for (const folder of byFolder.keys()) {
+      if (!infoFolders.has(folder)) throw new Error(`作品文件夹 src/content/works/${folder}/ 里缺少 index.yml（写标题、CP 等作品信息）`);
     }
 
-    const infos = [...folders].map(([folder, { index, chapters: raw }]): WorkInfo => {
+    const infos = infoEntries.map((info): WorkInfo => {
+      const folder = info.id.split('/')[0];
       const where = `src/content/works/${folder}/`;
-      if (!index) throw new Error(`作品文件夹 ${where} 里缺少 index.md（写标题、CP 等作品信息）`);
-      if (!index.data.title) throw new Error(`${where}index.md 需要写 title`);
-      if (raw.length === 0) throw new Error(`作品「${index.data.title}」没有章节：请在 ${where} 下放至少一个章节文件，例如 01.md`);
-      const title = index.data.title;
-      const slug = raw[0].slug.split('/')[0];
+      const d = info.data;
+      const title = d.title;
+      const raw = byFolder.get(folder) ?? [];
+      if (raw.length === 0) throw new Error(`作品「${title}」没有章节：请在 ${where} 下放至少一个章节文件，例如 01.md`);
+      const slug = folderSlug(folder);
+      const file = (e: Entry) => `${e.id.split('/')[1]}.md`;
       // 章节顺序只看 order，文件名随意。单章作品可以不写 order。
       if (raw.length > 1) {
-        const missing = raw.filter((e) => e.data.order === undefined).map((e) => e.id.split('/')[1]);
+        const missing = raw.filter((e) => e.data.order === undefined).map(file);
         if (missing.length) throw new Error(`「${title}」有多个章节，每章都要写 order（第几章）：${where}${missing.join('、')}`);
         const seen = new Map<number, string>();
         for (const e of raw) {
-          const file = e.id.split('/')[1];
-          if (seen.has(e.data.order!)) throw new Error(`「${title}」里 ${seen.get(e.data.order!)} 和 ${file} 的 order 都是 ${e.data.order}`);
-          seen.set(e.data.order!, file);
+          if (seen.has(e.data.order!)) throw new Error(`「${title}」里 ${seen.get(e.data.order!)} 和 ${file(e)} 的 order 都是 ${e.data.order}`);
+          seen.set(e.data.order!, file(e));
         }
       }
-      const sorted = raw.sort((a, b) => (a.data.order ?? 1) - (b.data.order ?? 1));
-      const chapters: Chapter[] = sorted.map((e, i) => {
+      const sorted = [...raw].sort((a, b) => (a.data.order ?? 1) - (b.data.order ?? 1));
+      const chapters: Chapter[] = sorted.map((e) => {
         const order = e.data.order ?? 1;
         const key = String(order).padStart(2, '0');
         return {
@@ -129,8 +135,7 @@ export function loadWorks(): Promise<WorkInfo[]> {
           url: url(`works/${slug}/${key}/`),
         };
       });
-      const words = chapters.reduce((n, c) => n + countWords(c.entry.body), 0);
-      const d = index.data;
+      const words = chapters.reduce((n, c) => n + countWords(c.entry.body ?? ''), 0);
       return {
         slug,
         title,
@@ -144,7 +149,7 @@ export function loadWorks(): Promise<WorkInfo[]> {
         words,
         minutes: Math.max(1, Math.round(words / site.readingSpeed)),
         url: chapters[0].url,
-        dek: d.summary ?? excerpt(chapters[0].entry.body),
+        dek: d.summary ?? excerpt(chapters[0].entry.body ?? ''),
       };
     });
     return infos.sort((a, b) => (b.updated?.getTime() ?? 0) - (a.updated?.getTime() ?? 0) || a.title.localeCompare(b.title, 'zh'));

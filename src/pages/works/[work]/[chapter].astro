@@ -1,5 +1,6 @@
 ---
 import Base from '../../../layouts/Base.astro';
+import { render } from 'astro:content';
 import { site, ui } from '../../../site.config';
 import { loadWorks, loadSeries, cpUrl, seriesUrl, fmtDate, countWords, type WorkInfo, type Chapter } from '../../../lib/works';
 
@@ -18,8 +19,8 @@ const prev = chapters[idx - 1];
 const next = chapters[idx + 1];
 const multi = chapters.length > 1;
 const isLast = idx === chapters.length - 1;
-const { Content } = await chapter.entry.render();
-const chapterWords = countWords(chapter.entry.body);
+const { Content } = await render(chapter.entry);
+const chapterWords = countWords(chapter.entry.body ?? '');
 const chapterMinutes = Math.max(1, Math.round(chapterWords / site.readingSpeed));
 // 单章作品里，章节标题常常就是作品名，重复就不显示
 const showChapterTitle = multi || chapter.title.trim() !== work.title.trim();
