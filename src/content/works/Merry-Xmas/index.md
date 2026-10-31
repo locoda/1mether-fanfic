@@ -1,7 +1,0 @@
----
-title: "Merry Xmas"
-cp: ["世界树"]
-updated: 2022-12-24
-series: "在平凡日常中流淌着的……"
-seriesOrder: 6
----

@@ -3,7 +3,8 @@
     "@chinese-fonts/sypxzs": "^3.0.0",
     "@fontsource/libre-caslon-display": "^5.3.0",
     "@fontsource/libre-caslon-text": "^5.3.0",
-    "astro": "4.16.19"
+    "astro": "^5.18.2",
+    "github-slugger": "^2.0.0"
   },
   "name": "fanfic-site-template",
   "private": true,
