@@ -4,16 +4,19 @@ import { defineCollection, z } from 'astro:content';
 //
 //   src/content/works/性别问题/
 //     index.md   ← 作品信息（标题、CP、日期……），下面不用写正文
-//     01.md      ← 第一章
-//     02.md      ← 第二章……（按文件名排序）
+//     正文.md    ← 章节文件，文件名随意
+//     番外.md
 //
-// 章节文件开头可以写 title 作为章节名；单章作品不用写。
+// 章节顺序看 order（1、2、3……），和文件名无关；网址也按 order 生成（/works/性别问题/02/）。
+// 单章作品的章节文件什么都不用写，直接写正文。
 // 两种文件放在同一个集合里，字段都是可选的，必填项在 src/lib/works.ts 里检查。
 const works = defineCollection({
   type: 'content',
   schema: z.object({
     // index.md：作品标题（必填）；章节文件：章节名（可选）
     title: z.string().optional(),
+    // 章节文件：第几章。多章作品必填，单章作品不用写
+    order: z.number().int().positive().optional(),
     // 以下只在 index.md 里写
     // CP：写一个字符串，或者多个：cp: ["世界树", "马北"]
     cp: z.union([z.string(), z.array(z.string())]).optional(),

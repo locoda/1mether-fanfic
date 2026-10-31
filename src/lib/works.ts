@@ -6,9 +6,11 @@ type Entry = CollectionEntry<'works'>;
 export interface Chapter {
   /** 原始内容条目（render() / body 从这里取） */
   entry: Entry;
-  /** 唯一标识，形如 "biased-coin/01" */
+  /** 唯一标识，形如 "biased-coin/01"（作品文件夹 + order） */
   slug: string;
-  /** 网址里的章节部分，形如 "01" */
+  /** 第几章，从 1 开始 */
+  order: number;
+  /** 网址里的章节部分，由 order 生成，形如 "01" */
   key: string;
   /** 章节名：没写 title 时，单章用作品名，多章用「第 N 章」 */
   title: string;
@@ -103,14 +105,27 @@ export function loadWorks(): Promise<WorkInfo[]> {
       if (raw.length === 0) throw new Error(`作品「${index.data.title}」没有章节：请在 ${where} 下放至少一个章节文件，例如 01.md`);
       const title = index.data.title;
       const slug = raw[0].slug.split('/')[0];
-      const sorted = raw.sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true }));
+      // 章节顺序只看 order，文件名随意。单章作品可以不写 order。
+      if (raw.length > 1) {
+        const missing = raw.filter((e) => e.data.order === undefined).map((e) => e.id.split('/')[1]);
+        if (missing.length) throw new Error(`「${title}」有多个章节，每章都要写 order（第几章）：${where}${missing.join('、')}`);
+        const seen = new Map<number, string>();
+        for (const e of raw) {
+          const file = e.id.split('/')[1];
+          if (seen.has(e.data.order!)) throw new Error(`「${title}」里 ${seen.get(e.data.order!)} 和 ${file} 的 order 都是 ${e.data.order}`);
+          seen.set(e.data.order!, file);
+        }
+      }
+      const sorted = raw.sort((a, b) => (a.data.order ?? 1) - (b.data.order ?? 1));
       const chapters: Chapter[] = sorted.map((e, i) => {
-        const key = e.slug.split('/').slice(1).join('/');
+        const order = e.data.order ?? 1;
+        const key = String(order).padStart(2, '0');
         return {
           entry: e,
-          slug: e.slug,
+          slug: `${slug}/${key}`,
+          order,
           key,
-          title: e.data.title ?? (sorted.length === 1 ? title : `第 ${i + 1} 章`),
+          title: e.data.title ?? (sorted.length === 1 ? title : `第 ${order} 章`),
           url: url(`works/${slug}/${key}/`),
         };
       });
