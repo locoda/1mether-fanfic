@@ -1,0 +1,81 @@
+---
+// 自托管字体：西文 Libre Caslon；中文思源屏显臻宋（中文网字计划按字频切片，浏览器只下载用到的切片）
+import '@chinese-fonts/sypxzs/dist/思源屏显臻宋/result.css';
+import '@fontsource/libre-caslon-text/400.css';
+import '@fontsource/libre-caslon-text/400-italic.css';
+import '@fontsource/libre-caslon-display/400.css';
+import '../styles/global.css';
+import { site, ui } from '../site.config';
+import { url, loadCps, loadSeries } from '../lib/works';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** 用于高亮导航：home / cp / series */
+  section?: 'home' | 'cp' | 'series';
+}
+const { title, description = site.description, section } = Astro.props;
+const pageTitle = title ? `${title} · ${site.title}` : site.title;
+// 没有 CP / 系列时，导航里就不显示对应入口
+const [cps, series] = await Promise.all([loadCps(), loadSeries()]);
+const nav = [
+  { key: 'home', label: ui.allWorks, href: url() },
+  ...(cps.length ? [{ key: 'cp', label: ui.cpIndex, href: url('cp/') }] : []),
+  ...(series.length ? [{ key: 'series', label: ui.seriesIndex, href: url('series/') }] : []),
+];
+// 深色模式：auto = 跟随系统 + 切换按钮；system = 只跟随系统；off = 始终浅色
+const darkMode = site.features.darkMode;
+---
+<!doctype html>
+<html lang={site.lang} data-theme={darkMode === 'off' ? 'light' : undefined}>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{pageTitle}</title>
+  <meta name="description" content={description} />
+  <meta property="og:title" content={pageTitle} />
+  <meta property="og:description" content={description} />
+  {darkMode === 'off' ? (
+    <meta name="theme-color" content="#ffffff" />
+  ) : (
+    <>
+      <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+      <meta name="theme-color" content="#141414" media="(prefers-color-scheme: dark)" />
+    </>
+  )}
+  {darkMode === 'auto' && (
+    <script is:inline>
+      try { const t = localStorage.getItem('theme'); if (t) document.documentElement.dataset.theme = t; } catch {}
+    </script>
+  )}
+</head>
+<body>
+  <header class="site-header">
+   <div class="masthead">
+    <a class="brand" href={url()}>{site.title}</a>
+    <nav aria-label="主导航">
+      {nav.map((n) => <a href={n.href} aria-current={section === n.key ? 'page' : undefined}>{n.label}</a>)}
+      {darkMode === 'auto' && <button class="theme-toggle" type="button" aria-label="切换深浅色" title="切换深浅色"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 1.5a6.5 6.5 0 0 1 0 13z" fill="currentColor"/></svg></button>}
+    </nav>
+   </div>
+  </header>
+  <main><slot /></main>
+  <footer>
+    <div class="inner">
+      <a class="brand" href={url()}>{site.title}</a>
+      {site.links.length > 0 && (
+        <span class="links">{site.links.map((l) => <a href={l.href} rel="me noopener">{l.label}</a>)}</span>
+      )}
+      <span class="copy">© {site.author}{site.tagline && ` · ${site.tagline}`}</span>
+    </div>
+  </footer>
+  {darkMode === 'auto' && <script is:inline>
+    document.querySelector('.theme-toggle')?.addEventListener('click', () => {
+      const root = document.documentElement;
+      const dark = root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+      root.dataset.theme = dark ? 'light' : 'dark';
+      try { localStorage.setItem('theme', root.dataset.theme); } catch {}
+    });
+  </script>}
+</body>
+</html>

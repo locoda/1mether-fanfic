@@ -1,0 +1,24 @@
+{
+  "devDependencies": {
+    "@astrojs/markdown-remark": "^7.3.3",
+    "@chinese-fonts/sypxzs": "^3.0.0",
+    "@fontsource/libre-caslon-display": "^5.3.0",
+    "@fontsource/libre-caslon-text": "^5.3.0",
+    "astro": "^7.4.0",
+    "github-slugger": "^2.0.0",
+    "mammoth": "^1.13.0",
+    "node-html-parser": "^9.0.4",
+    "yaml": "^2.9.1"
+  },
+  "name": "fanfic-site-template",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "import": "node scripts/import.mjs",
+    "export": "node scripts/export-md.mjs"
+  },
+  "type": "module",
+  "version": "0.1.0"
+}

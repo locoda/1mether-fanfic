@@ -1,0 +1,18 @@
+---
+import Base from '../../layouts/Base.astro';
+import { ui } from '../../site.config';
+import { loadCps, cpUrl } from '../../lib/works';
+const cps = await loadCps();
+const total = cps.reduce((n, g) => n + g.works.length, 0);
+---
+<Base section="cp" title={ui.cpIndex}>
+  <div class="section-head">
+    <h1>{ui.cpIndex}</h1>
+    <p class="meta"><span>{cps.length} 对</span><span>{ui.works(total)}</span></p>
+  </div>
+  <ul class="directory">
+    {cps.map((g) => (
+      <li><a href={cpUrl(g.name)}><span class="name">{g.name}</span><span class="count">{ui.works(g.works.length)}</span></a></li>
+    ))}
+  </ul>
+</Base>

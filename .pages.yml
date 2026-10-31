@@ -1,0 +1,157 @@
+# Pages CMS 配置：https://pagescms.org
+# 用 GitHub 账号登录 https://app.pagescms.org ，选这个仓库，就能在网页上写作品。
+# 保存后会自动提交到仓库，Cloudflare Pages 随后自动重新部署。
+#
+# 一篇作品 = src/content/works/ 下的一个 .yml 文件：作品信息 + 所有章节，在同一个页面里编辑。
+
+content:
+  - name: works
+    label: 作品
+    type: collection
+    path: src/content/works
+    subfolders: false
+    format: yaml
+    # 新建作品时会按作品名生成文件名，也可以自己改（文件名就是网址，例如 my-work.yml → /works/my-work/）
+    filename:
+      template: "{primary}.yml"
+      field: create
+    view:
+      primary: title
+      fields: [title, cp, updated]
+      sort: [updated, title]
+      search: [title, cp, series]
+      default:
+        sort: updated
+        order: desc
+    fields:
+      - name: title
+        label: 作品名
+        type: string
+        required: true
+
+      - name: cp
+        label: CP
+        type: string
+        list: true
+        description: 可以填多个
+
+      - name: updated
+        label: 更新日期
+        type: date
+        default: ""
+        options:
+          format: yyyy-MM-dd
+        description: 决定首页排序
+
+      - name: summary
+        label: 简介
+        type: text
+        description: 不填就自动取第一章开头
+
+      - name: series
+        label: 系列
+        type: string
+        description: 系列名完全相同的作品会自动归在一起
+
+      - name: seriesOrder
+        label: 系列里的第几篇
+        type: number
+
+      - name: status
+        label: 连载状态
+        type: select
+        options:
+          values:
+            - { name: ongoing, label: 连载中 }
+            - { name: finished, label: 已完结 }
+        description: 不填就不显示
+
+      - name: chapters
+        label: 章节
+        type: object
+        description: 点「添加」多一章，拖动调整顺序；单章作品只留一章就行
+        list:
+          min: 1
+          collapsible:
+            collapsed: true
+            summary: "{index}. {title}"
+        fields:
+          - name: title
+            label: 章节名
+            type: string
+            description: 单章作品可以不填
+
+          - name: body
+            label: 正文
+            type: text
+            required: true
+            description: 空一行是分段；作者注写在 <aside class="author-note" aria-label="作者注"> 和 </aside> 之间
+
+  # ---------- 网站设置：站名、作者、链接、功能开关 ----------
+  - name: settings
+    label: 网站设置
+    type: file
+    path: src/site.yml
+    format: yaml
+    fields:
+      - name: title
+        label: 站名
+        type: string
+        required: true
+      - name: tagline
+        label: 页脚小字
+        type: string
+      - name: author
+        label: 作者名
+        type: string
+        description: 用在署名和页脚
+      - name: description
+        label: 网站简介
+        type: text
+        description: 搜索引擎和分享链接时显示
+      - name: lang
+        label: 页面语言
+        type: string
+        description: 一般不用改，简体中文是 zh-CN
+      - name: links
+        label: 页脚链接
+        type: object
+        list: true
+        description: 例如 AO3、微博、Lofter 主页
+        fields:
+          - name: label
+            label: 名称
+            type: string
+          - name: href
+            label: 网址
+            type: string
+      - name: perPage
+        label: 每页作品数
+        type: number
+      - name: readingSpeed
+        label: 阅读速度（字/分钟）
+        type: number
+        description: 用来估算阅读时长
+      - name: features
+        label: 功能开关
+        type: object
+        fields:
+          - { name: leadStory, label: 首页头条（最新一篇做成大标题）, type: boolean }
+          - { name: dropCap, label: 首字放大, type: boolean }
+          - { name: endMark, label: 完结章文末 ♦, type: boolean }
+          - { name: progressBar, label: 阅读进度条, type: boolean }
+          - { name: wordCount, label: 显示字数, type: boolean }
+          - { name: readingTime, label: 显示阅读时长, type: boolean }
+          - { name: byline, label: 「文 / 作者」署名, type: boolean }
+          - { name: chapterPicker, label: 顶部选章菜单, type: boolean }
+          - { name: keyboardNav, label: 键盘 ← → 翻章, type: boolean }
+          - { name: related, label: 文末同 CP 推荐, type: boolean }
+          - { name: autoSummary, label: 没写简介时自动取正文开头, type: boolean }
+          - name: darkMode
+            label: 深色模式
+            type: select
+            options:
+              values:
+                - { name: "auto", label: 跟随系统，并显示切换按钮 }
+                - { name: "system", label: 只跟随系统 }
+                - { name: "off", label: 始终浅色 }

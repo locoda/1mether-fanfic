@@ -1,0 +1,23 @@
+---
+import { loadWorks } from '../../lib/works';
+
+// 作品页不单独成页：直接跳到第一章。
+export async function getStaticPaths() {
+  const works = await loadWorks();
+  return works.map((w) => ({ params: { work: w.slug }, props: { title: w.title, target: w.url } }));
+}
+const { title, target } = Astro.props;
+---
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="refresh" content={`0; url=${target}`} />
+  <link rel="canonical" href={target} />
+  <title>{title}</title>
+</head>
+<body>
+  <p><a href={target}>正在前往《{title}》第一章…</a></p>
+</body>
+</html>

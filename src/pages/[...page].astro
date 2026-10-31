@@ -1,0 +1,57 @@
+---
+import type { GetStaticPaths, Page } from 'astro';
+import Base from '../layouts/Base.astro';
+import WorkItem from '../components/WorkItem.astro';
+import Pagination from '../components/Pagination.astro';
+import { site, ui } from '../site.config';
+import { loadWorks, cpUrl, seriesUrl, url, fmtDate, type WorkInfo } from '../lib/works';
+
+export const getStaticPaths = (async ({ paginate }) => {
+  const works = await loadWorks();
+  return paginate(works, { pageSize: site.perPage });
+}) satisfies GetStaticPaths;
+
+const { page } = Astro.props as { page: Page<WorkInfo> };
+const lead = site.features.leadStory && page.currentPage === 1 ? page.data[0] : undefined;
+const rest = lead ? page.data.slice(1) : page.data;
+const href = (n: number) => url(n > 1 ? `${n}/` : '');
+---
+<Base section="home" title={page.currentPage > 1 ? `${ui.allWorks} · ${page.currentPage}` : undefined}>
+  {page.total === 0 && <p>{ui.empty}</p>}
+  {lead && (
+    <article class="lead-story">
+      <span class="label">{ui.latest}</span>
+      {(lead.cps.length > 0 || lead.series) && (
+        <p class="rubric">
+          {lead.cps.map((cp, i) => <>{i > 0 && <span class="sep">/</span>}<a href={cpUrl(cp)}>{cp}</a></>)}
+          {lead.cps.length > 0 && lead.series && <span class="sep">·</span>}
+          {lead.series && <a href={seriesUrl(lead.series)}>{lead.series}</a>}
+        </p>
+      )}
+      <h2><a href={lead.url}>{lead.title}</a></h2>
+      {lead.dek && <p class="dek">{lead.dek}</p>}
+      {site.features.byline && <p class="byline">{ui.byline(site.author)}</p>}
+      <p class="meta">
+        {lead.updated && <span>{fmtDate(lead.updated)}</span>}
+        {site.features.wordCount && <span>{ui.words(lead.words)}</span>}
+        {site.features.readingTime && <span>{ui.minutes(lead.minutes)}</span>}
+      </p>
+    </article>
+  )}
+  {!lead && (
+    <div class="section-head" style="margin-bottom:40px">
+      <h1>{ui.allWorks}</h1>
+      <p class="meta"><span>{ui.works(page.total)}</span><span>{page.currentPage} / {page.lastPage}</span></p>
+    </div>
+  )}
+  {lead && (
+    <div class="river-head">
+      <h2>{ui.allWorks}</h2>
+      <p class="meta"><span>{ui.works(page.total)}</span></p>
+    </div>
+  )}
+  <ul class="river">
+    {rest.map((w) => <WorkItem work={w} />)}
+  </ul>
+  <Pagination current={page.currentPage} last={page.lastPage} href={href} />
+</Base>

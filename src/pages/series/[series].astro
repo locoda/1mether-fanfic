@@ -1,0 +1,36 @@
+---
+import Base from '../../layouts/Base.astro';
+import { site, ui } from '../../site.config';
+import { loadSeries, url, cpUrl, fmtDate, type Group } from '../../lib/works';
+
+export async function getStaticPaths() {
+  const series = await loadSeries();
+  return series.map((s) => ({ params: { series: s.slug }, props: { group: s } }));
+}
+const { group } = Astro.props as { group: Group };
+const words = group.works.reduce((n, w) => n + w.words, 0);
+---
+<Base section="series" title={group.name} description={`${site.author} 的系列「${group.name}」`}>
+  <div class="section-head" style="margin-bottom:40px">
+    <p class="rubric"><a href={url('series/')}>{ui.seriesIndex}</a></p>
+    <h1>{group.name}</h1>
+    <p class="meta"><span>{ui.works(group.works.length)}</span>{site.features.wordCount && <span>{ui.words(words)}</span>}</p>
+  </div>
+  <ol class="river" style="border-top:1px solid var(--rule)">
+    {group.works.map((w, i) => (
+      <li class="story">
+        <p class="rubric">
+          <span style="color:var(--muted)">{ui.seriesPart(w.seriesOrder ?? i + 1)}</span>
+          {w.cps.map((cp) => <><span class="sep">·</span><a href={cpUrl(cp)}>{cp}</a></>)}
+        </p>
+        <h3><a href={w.url}>{w.title}</a></h3>
+        {w.dek && <p class="dek">{w.dek}</p>}
+        <div class="side">
+          {w.updated && <span><time datetime={fmtDate(w.updated)}>{fmtDate(w.updated)}</time></span>}
+          {site.features.wordCount && <span>{ui.words(w.words)}</span>}
+          {w.chapters.length > 1 && <span>{w.chapters.length} {ui.chapters}</span>}
+        </div>
+      </li>
+    ))}
+  </ol>
+</Base>
