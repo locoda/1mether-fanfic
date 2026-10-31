@@ -33,22 +33,22 @@ jobs:
       - run: npm run export
 
       - name: 打包
+        env:
+          TZ: Asia/Shanghai
         run: |
-          stamp=$(date -u +%Y%m%d-%H%M%S)
-          count=$(ls export/*.md | wc -l | tr -d ' ')
-          echo "TAG=works-$stamp" >> "$GITHUB_ENV"
-          echo "COUNT=$count" >> "$GITHUB_ENV"
-          echo "DAY=$(date -u +%Y-%m-%d)" >> "$GITHUB_ENV"
-          (cd export && zip -q -r "../works-$stamp.zip" .)
+          # 起名字：<仓库名>-works-<日期>.zip（见 scripts/release-name.mjs）
+          node scripts/release-name.mjs | tee -a "$GITHUB_ENV"
+          echo "COUNT=$(ls export/*.md | wc -l | tr -d ' ')" >> "$GITHUB_ENV"
 
       - name: 发布到 Releases
         env:
           GH_TOKEN: ${{ github.token }}
           VISIBILITY: ${{ inputs.visibility }}
         run: |
+          (cd export && zip -q -r "../$FILE" .)
           draft=--draft
           if [ "$VISIBILITY" = "公开" ]; then draft=; fi
-          gh release create "$TAG" "$TAG.zip" $draft \
+          gh release create "$TAG" "$FILE" $draft \
             --target "$GITHUB_SHA" \
             --title "作品导出 $DAY" \
             --notes "全部 $COUNT 篇作品的 Markdown 版本（每篇一个 .md：开头是作品信息，「# 章节名」分章）。可以用 npm run import 导回网站。"
