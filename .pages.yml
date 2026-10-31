@@ -22,7 +22,7 @@ content:
     subfolders: false
     format: yaml
     # 新建作品时只填作品名。Pages CMS 生成文件名时会把中文删掉，所以文件名用创建时间，
-    # 网址由网站按作品名生成（见 src/lib/works.ts 的 assignSlugs）
+    # 网址由网站按作品名生成（见 src/lib/works.ts 的 assignSlugs）；每天凌晨自动改名成「作品名.yml」（rename-works.yml）
     filename:
       template: "{year}{month}{day}-{hour}{minute}{second}.yml"
       field: false

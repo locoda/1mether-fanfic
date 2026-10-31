@@ -40,9 +40,11 @@ scripts/import.mjs                npm run import：md / txt / docx / AO3 HTML �
 scripts/export-md.mjs             npm run export：yml → export/<作品>.md（export/ 不进 git）
 scripts/lib/work-md.mjs           yml ⇄ md 的转换规则，导入导出共用
 scripts/import-uploads.mjs        后台「批量导入」：imports/ 里的文件 → yml，文件名当作品名
+scripts/rename-works.mjs          时间戳文件名 → 作品名.yml（网址不变才改）
 scripts/release-name.mjs          「导出作品」工作流的 zip 命名：<仓库名>-works-<日期>.zip
 .github/workflows/deploy.yml      部署到 GitHub Pages
 .github/workflows/import.yml      imports/ 有新文件时运行 import-uploads.mjs，提交后触发部署
+.github/workflows/rename-works.yml  每天凌晨把后台新建的时间戳文件改名成作品名
 .github/workflows/export-release.yml  手动运行，把全部作品打包成 zip 发到 Releases（默认草稿）
 .pages.yml                        Pages CMS 配置
 ```
@@ -50,7 +52,7 @@ scripts/release-name.mjs          「导出作品」工作流的 zip 命名：<�
 ### 网址规则（改动时不能变）
 
 - 作品：`/works/<slug>/`，`slug` 是 yml 文件名经 `github-slugger` 处理（小写、去标点、保留中文）。`/works/<slug>/` 本身是跳转页，跳到第一章
-- 网页后台新建的作品文件名是时间戳（`20261031-203512.yml`，Pages CMS 的 slugify 会删光中文，只能这样），这类文件的 slug 改用作品名生成；重名时按文件名排序依次加 `-2`、`-3`。逻辑在 `works.ts` 的 `assignSlugs()`，普通文件名优先占用 slug
+- 网页后台新建的作品文件名是时间戳（`20261031-203512.yml`，Pages CMS 的 slugify 会删光中文，只能这样），这类文件的 slug 改用作品名生成；重名时按文件名排序依次加 `-2`、`-3`。逻辑在 `works.ts` 的 `assignSlugs()`，普通文件名优先占用 slug。`rename-works.yml` 每天凌晨跑 `scripts/rename-works.mjs` 把时间戳文件改名成作品名，只在改名后 slug 不变时才改（不在保存后立刻改：编辑中途文件被改名，后台再保存会出问题）
 - 章节：`/works/<slug>/01/`、`/02/`……，按 `chapters` 列表顺序编号，单章作品也是 `/01/`
 - 配对：`/cp/<CP 名 slug>/`，系列：`/series/<系列名 slug>/`
 - 首页分页 `/2/`、`/3/`……，每页篇数是 `site.yml` 的 `display.perPage`
@@ -143,7 +145,7 @@ git merge template/main        # 第一次同步要加 --allow-unrelated-histori
 
 ## 已知但还没验证的
 
-- 批量导入工作流、Pages CMS 的 media 上传和时间戳文件名，都还没在真实的 GitHub / Pages CMS 上跑过
+- 批量导入、改名工作流，Pages CMS 的 media 上传和时间戳文件名，都还没在真实的 GitHub / Pages CMS 上跑过
 - AO3 HTML 导入是按 AO3 下载页结构写的，测试文件是手写的，还没用真实的 AO3 下载文件验证过
 - GitHub Pages 部署和「导出作品」工作流需要在 GitHub 上实际运行才能确认
 - Pages CMS 官方托管版是否收费，文档里没写
