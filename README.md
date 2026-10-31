@@ -14,40 +14,59 @@
 
 ## 写作品
 
-一篇作品 = 一个作品文件 + 一个章节文件夹：
+**一篇作品 = `src/content/works/` 下的一个文件夹。** 文件夹名就是网址，建议用作品名或英文缩写。
 
 ```
-src/content/works/交换律.md          ← 作品信息
-src/content/chapters/交换律/01.md    ← 第一章
-src/content/chapters/交换律/02.md    ← 第二章……
+src/content/works/
+  溶/
+    index.md     ← 作品信息
+    01.md        ← 正文
+  性别问题/
+    index.md
+    01.md        ← 章节文件，文件名随意（也可以叫 正文.md、番外.md）
+    02.md
+    03.md
+    04.md
 ```
 
-作品文件只有 frontmatter，除了 `title` 都可以不写：
+### index.md：作品信息
+
+只写开头这一段，下面不用写正文。除了 `title`，其他都可以不写：
 
 ```yaml
 ---
-title: "交换律"
-cp: "辉树"              # 多个 CP 写成 ["辉树", "世界树"]
-updated: 2026-02-28     # 决定排序
+title: "性别问题"
+cp: "辉慧"              # 多个 CP 写成 ["辉慧", "辉树"]
+updated: 2022-09-24     # 决定首页排序
 series: "度量空间"       # 同名系列自动归在一起
 seriesOrder: 4          # 系列里的第几篇
 summary: "一句话简介"     # 不写就自动取正文开头
-status: finished        # ongoing / finished，不写不显示
+status: finished        # ongoing（连载中）/ finished（已完结），不写不显示
 ---
 ```
 
-章节文件：
+### 章节文件
 
-```yaml
+**单章作品**：什么都不用写，直接写正文。
+
+**多章作品**：每章开头写章节名和 `order`（第几章）。章节顺序只看 `order`，和文件名无关；网址也按 `order` 生成（`order: 2` → `/works/性别问题/02/`）。
+
+```markdown
 ---
-title: "正文"
-order: 1
+title: "番外/慧人的烦恼"
+order: 2
 ---
 
-正文……
+木村慧人最近不太开心。
 ```
 
-作者注（可选，放在正文前或正文后）：
+漏写 `order`、或者两章写了同一个数字，构建时会报错并指出是哪个文件。
+
+**加一章** = 在文件夹里新建一个文件，写上 `order`；**加一篇** = 新建一个文件夹，放 `index.md` 和正文文件。
+
+### 作者注
+
+放在正文前或正文后：
 
 ```html
 <aside class="author-note" aria-label="作者注">
@@ -59,7 +78,7 @@ order: 1
 </aside>
 ```
 
-单行的作者注也可以直接写成一段 `作者注：……`，会自动转换。
+单行的作者注也可以直接写成一段 `作者注：……`，会自动转换。正文后的作者注把 `aria-label` 写成 `章末注`。
 
 ## 本地预览
 
