@@ -1,5 +1,5 @@
 ---
 title: "HBD"
-pairing: "Sato Taiki/Reader"
+cp: "大树x我"
 updated: 2022-12-06
 ---

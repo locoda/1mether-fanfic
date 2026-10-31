@@ -24,7 +24,7 @@ const chapterUrl = (c: typeof chapter) => `${import.meta.env.BASE_URL}works/${wo
 const homeUrl = import.meta.env.BASE_URL;
 ---
 <Base title={`${chapter.data.title} · ${work.data.title}`}>
-  <p class="eyebrow"><a href={homeUrl}>全部作品</a> / {work.data.pairing && <span>{work.data.pairing} · </span>}{work.data.title}</p>
+  <p class="eyebrow"><a href={homeUrl}>全部作品</a> / {work.data.cp && <span>[{work.data.cp}] · </span>}{work.data.title}</p>
   <h1 class="chapter-title">{chapter.data.title}</h1>
   {chapters.length > 1 && <p class="chapter-count">第 {chapter.data.order} 章 / 共 {chapters.length} 章</p>}
   <div class="chapter-body"><Content /></div>
