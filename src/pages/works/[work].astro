@@ -1,21 +1,11 @@
 ---
-import { getCollection } from 'astro:content';
-import { chaptersOf } from '../../lib/works';
+import { loadWorks } from '../../lib/works';
 
 // 作品页不单独成页：直接跳到第一章。
 export async function getStaticPaths() {
-  const works = await getCollection('works');
-  return await Promise.all(works.map(async (w) => {
-    const chapters = await chaptersOf(w.slug);
-    const first = chapters[0];
-    const part = first ? first.slug.split('/').slice(1).join('/') : '';
-    return {
-      params: { work: w.slug },
-      props: { title: w.data.title, target: `${import.meta.env.BASE_URL}works/${w.slug}/${part}/` },
-    };
-  }));
+  const works = await loadWorks();
+  return works.map((w) => ({ params: { work: w.slug }, props: { title: w.title, target: w.url } }));
 }
-
 const { title, target } = Astro.props;
 ---
 <!doctype html>

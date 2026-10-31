@@ -1,0 +1,49 @@
+---
+import type { GetStaticPaths, Page } from 'astro';
+import Base from '../layouts/Base.astro';
+import WorkItem from '../components/WorkItem.astro';
+import Pagination from '../components/Pagination.astro';
+import { site, ui } from '../site.config';
+import { loadWorks, cpUrl, seriesUrl, url, fmtDate, type WorkInfo } from '../lib/works';
+
+export const getStaticPaths = (async ({ paginate }) => {
+  const works = await loadWorks();
+  return paginate(works, { pageSize: site.perPage });
+}) satisfies GetStaticPaths;
+
+const { page } = Astro.props as { page: Page<WorkInfo> };
+const all = page.data;
+const feature = site.featureLatest && page.currentPage === 1 ? all[0] : undefined;
+const rest = feature ? all.slice(1) : all;
+const href = (n: number) => url(n > 1 ? `${n}/` : '');
+---
+<Base section="home" title={page.currentPage > 1 ? `${ui.allWorks} · ${page.currentPage}` : undefined}>
+  {page.total === 0 && <p>{ui.empty}</p>}
+  {feature && (
+    <article class="feature">
+      <span class="label">{ui.latest}{feature.updated && ` · ${fmtDate(feature.updated)}`}</span>
+      {(feature.cps.length > 0 || feature.series) && (
+        <p class="kicker">
+          {feature.cps.map((cp, i) => <>{i > 0 && <span class="sep">/</span>}<a href={cpUrl(cp)}>{cp}</a></>)}
+          {feature.cps.length > 0 && feature.series && <span class="sep">·</span>}
+          {feature.series && <a href={seriesUrl(feature.series)}>{feature.series}</a>}
+        </p>
+      )}
+      <h2 class="title"><a href={feature.url}>{feature.title}</a></h2>
+      {feature.dek && <p class="dek">{feature.dek}</p>}
+      <p class="meta">
+        <span>{site.author}</span>
+        <span>{ui.words(feature.words)}</span>
+        <span>{ui.minutes(feature.minutes)}</span>
+      </p>
+    </article>
+  )}
+  <div class="section-head">
+    <h1>{ui.allWorks}</h1>
+    <span class="meta">{ui.works(page.total)}{page.lastPage > 1 && ` · ${page.currentPage}/${page.lastPage}`}</span>
+  </div>
+  <ul class="work-list two-col">
+    {rest.map((w) => <WorkItem work={w} />)}
+  </ul>
+  <Pagination current={page.currentPage} last={page.lastPage} href={href} />
+</Base>

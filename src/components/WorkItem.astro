@@ -1,0 +1,24 @@
+---
+import { ui } from '../site.config';
+import { cpUrl, seriesUrl, fmtDate, type WorkInfo } from '../lib/works';
+interface Props { work: WorkInfo; showCp?: boolean; num?: number }
+const { work: w, showCp = true, num } = Astro.props;
+---
+<li class="work-item">
+  {(showCp && w.cps.length > 0 || w.series) && (
+    <p class="kicker">
+      {showCp && w.cps.map((cp, i) => <>{i > 0 && <span class="sep">/</span>}<a href={cpUrl(cp)}>{cp}</a></>)}
+      {showCp && w.cps.length > 0 && w.series && <span class="sep">·</span>}
+      {w.series && <a href={seriesUrl(w.series)} style="color:var(--muted)">{w.series}</a>}
+    </p>
+  )}
+  <h3 class="title"><a href={w.url}>{w.title}</a></h3>
+  {w.dek && <p class="dek">{w.dek}</p>}
+  <p class="meta">
+    {w.updated && <time datetime={fmtDate(w.updated)}>{fmtDate(w.updated)}</time>}
+    <span>{ui.words(w.words)}</span>
+    {w.chapters.length > 1 && <span>{w.chapters.length} {ui.chapters}</span>}
+    {w.status && <span>{w.status === 'ongoing' ? ui.ongoing : ui.finished}</span>}
+  </p>
+  {num !== undefined && <span class="num" aria-hidden="true">{String(num).padStart(2, '0')}</span>}
+</li>
