@@ -445,7 +445,7 @@ footer .copy { width: 100%; font-family: var(--sans); font-size: 12px; color: va
   letter-spacing: 0.02em;
 }
 .chapter-body p { margin: 0 0 1.1em; text-align: justify; text-justify: inter-ideograph; }
-.chapter-body p.lead::first-letter {
+.chapter-body.drop-cap p.lead::first-letter {
   float: left;
   font-family: var(--display);
   font-size: 4.1em;
@@ -596,7 +596,7 @@ footer .copy { width: 100%; font-family: var(--sans); font-size: 12px; color: va
   .story .side span { display: inline; }
   .story .side span + span::before { content: "·"; margin: 0 0.6em; }
   .chapter-body { font-size: 18px; line-height: 1.85; }
-  .chapter-body p.lead::first-letter { font-size: 3.4em; }
+  .chapter-body.drop-cap p.lead::first-letter { font-size: 3.4em; }
   .pn { gap: 16px; }
   .pn-t { font-size: 18px; }
   .toc .m { display: none; }

@@ -1,5 +1,5 @@
 ---
-import { ui } from '../site.config';
+import { site, ui } from '../site.config';
 import { cpUrl, seriesUrl, fmtDate, type WorkInfo } from '../lib/works';
 interface Props { work: WorkInfo; showCp?: boolean }
 const { work: w, showCp = true } = Astro.props;
@@ -17,7 +17,7 @@ const cps = showCp ? w.cps : [];
   {w.dek && <p class="dek">{w.dek}</p>}
   <div class="side">
     {w.updated && <span><time datetime={fmtDate(w.updated)}>{fmtDate(w.updated)}</time></span>}
-    <span>{ui.words(w.words)}</span>
+    {site.features.wordCount && <span>{ui.words(w.words)}</span>}
     {w.chapters.length > 1 && <span>{w.chapters.length} {ui.chapters}</span>}
     {w.status && <span>{w.status === 'ongoing' ? ui.ongoing : ui.finished}</span>}
   </div>
