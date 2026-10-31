@@ -49,7 +49,7 @@ scripts/release-name.mjs          「导出作品」工作流的 zip 命名：<�
 - 作品：`/works/<slug>/`，`slug` 是 yml 文件名经 `github-slugger` 处理（小写、去标点、保留中文）。`/works/<slug>/` 本身是跳转页，跳到第一章
 - 章节：`/works/<slug>/01/`、`/02/`……，按 `chapters` 列表顺序编号，单章作品也是 `/01/`
 - 配对：`/cp/<CP 名 slug>/`，系列：`/series/<系列名 slug>/`
-- 首页分页 `/2/`、`/3/`……，每页篇数是 `site.yml` 的 `perPage`
+- 首页分页 `/2/`、`/3/`……，每页篇数是 `site.yml` 的 `display.perPage`
 - 所有站内链接必须经过 `src/lib/works.ts` 的 `url()`（带上 `BASE_URL`），否则 GitHub Pages 项目站（子路径 `/<仓库名>/`）会断链
 
 ### 作品内容约定
@@ -61,10 +61,12 @@ scripts/release-name.mjs          「导出作品」工作流的 zip 命名：<�
 
 ## 网站设置
 
-- `src/site.yml` 是用户可以在后台改的设置，`src/site.config.ts` 负责读取并补默认值
+- `src/site.yml` 是用户可以在后台改的设置，分三组：`info`（网站信息）、`display`（显示设置）、`works`（作品设置），和后台「网站设置」的分组一一对应
+- `src/site.config.ts` 读取时用 `GROUPS` 把分组摊平成内部结构（`site.title`、`site.perPage`、`site.features.xxx`），页面代码只用这个内部结构。旧版不分组的写法（`title`、`features` 写在最外层）也能读，下游站点可能还是旧格式
+- 报错信息按分组写法指出位置（如 `display.perPage`）
 - Astro 7 用的是 **zod 4**：`.default()` 不会再解析嵌套对象里的默认值。补默认值要用 `z.preprocess(v => v ?? fallback, schema)`（见 `opt()`），否则 `features` 缺省时所有开关都会变成 undefined
 - Pages CMS 保存 `site.yml` 时会**删掉所有注释**，空列表也会被去掉。所以设置说明只能写在 README 和 `.pages.yml` 的 `description` 里，代码必须能处理缺失的项
-- 新增功能开关时，三处都要改：`site.yml` 默认值、`site.config.ts` 的 schema、`.pages.yml` 的 features 字段；README 的开关表也要加一行
+- 新增功能开关时，这几处都要改：`site.yml` 对应分组里的默认值、`site.config.ts` 的 schema 和 `GROUPS`、`.pages.yml` 网站设置里对应分组的字段、README 里对应分组的表格。改完检查 `.pages.yml` 每组的字段和 `site.yml` 每组的键完全一致
 
 ## Pages CMS 的限制（踩过的坑）
 
@@ -104,7 +106,7 @@ git fetch template
 git merge template/main        # 第一次同步要加 --allow-unrelated-histories
 ```
 
-- 下游的 `.gitattributes` 里有 `README.md merge=ours` 和 `src/site.yml merge=ours`，同步时这两个文件自动保留下游版本
+- 下游的 `.gitattributes` 里有 `README.md merge=ours` 和 `src/site.yml merge=ours`，同步时这两个文件自动保留下游版本。所以模板改了 `site.yml` 的结构（比如新增分组或开关）时，同步 PR 里要手动把下游的 `site.yml` 迁移过去，保留下游原来的值
 - 其他冲突：作品保留下游的，代码用模板的；合并进来的 `example-*.yml` 和 `LICENSE` 在下游删掉（MIT 是模板代码的授权，放在下游容易被理解成作品也是 MIT）
 - **同步模板的 PR 必须用「Create a merge commit」合并，不能 squash**，否则和模板的关联会断掉，下次同步要从头解决所有冲突。在 PR 描述开头醒目地写出来
 - 用 Cloudflare 部署的下游站点，同步带进 `deploy.yml` 之前要确认仓库变量 `DEPLOY=cloudflare` 已经设好

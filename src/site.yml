@@ -1,27 +1,29 @@
 # 网站设置。可以直接改这个文件，也可以在网页后台（Pages CMS）的「网站设置」里改。
-# 没写的项目会用默认值。
+# 没写的项目会用默认值。（在网页后台保存后，这些注释会被去掉，说明可以看 README。）
 
-# 站名，显示在刊头和浏览器标签上
-title: 我的同人站
-# 页脚的一行小字，可留空
-tagline: 同人作品存档
-# 作者名，用在署名和页脚
-author: 作者名
-# 网站简介，搜索引擎和分享链接时显示
-description: 我的同人作品存档。
-# 页面语言，影响排版与读屏
-lang: zh-CN
-# 页脚的外部链接，例如：
-#   - label: AO3
-#     href: https://archiveofourown.org/users/xxx
-links: []
-# 每页显示多少篇作品（首页、CP 页通用）
-perPage: 20
-# 阅读速度（字/分钟），用来估算阅读时长
-readingSpeed: 500
+# 网站信息
+info:
+  # 站名，显示在刊头和浏览器标签上
+  title: 我的同人站
+  # 页脚的一行小字，可留空
+  tagline: 同人作品存档
+  # 作者名，用在署名和页脚
+  author: 作者名
+  # 网站简介，搜索引擎和分享链接时显示
+  description: 我的同人作品存档。
+  # 页面语言
+  lang: zh-CN
+  # 页脚链接，例如：
+  #   - label: AO3
+  #     href: https://archiveofourown.org/users/xxx
+  links: []
 
-# 功能开关：true 打开，false 关闭
-features:
+# 显示设置
+display:
+  # 深色模式：auto 跟随系统并显示切换按钮；system 只跟随系统；off 始终浅色
+  darkMode: auto
+  # 每页显示多少篇作品（首页、配对页）
+  perPage: 20
   # 首页第一页把最新一篇做成大标题头条
   leadStory: true
   # 正文第一个字放大（首字下沉）
@@ -30,21 +32,28 @@ features:
   endMark: true
   # 章节页顶部的阅读进度条
   progressBar: true
-  # 显示字数（列表、系列页、章节页）
-  wordCount: true
-  # 显示预计阅读时长（章节页、首页头条）
-  readingTime: true
-  # 标题下的「文 / 作者」署名
-  byline: true
   # 多章作品：点「第 N 章 / 共 M 章」弹出章节菜单
   chapterPicker: true
   # 键盘 ← → 翻章
   keyboardNav: true
+
+# 作品设置
+works:
+  # 每篇作品可以单独写作者名（合集、合志这类多人的站用）；没写的作品用上面的作者名
+  customAuthor: false
+  # 标题下的「文 / 作者」署名
+  byline: true
+  # 显示连载中 / 已完结
+  status: true
+  # 显示更新日期
+  updatedDate: true
+  # 显示字数
+  wordCount: true
+  # 显示预计阅读时长
+  readingTime: true
+  # 阅读速度（字/分钟），用来估算阅读时长
+  readingSpeed: 500
+  # 没写简介时，列表里自动显示正文开头
+  autoSummary: true
   # 文末「更多同 CP 作品」推荐
   related: true
-  # 没写简介（summary）时，列表里自动显示正文开头
-  autoSummary: true
-  # 每篇作品可以单独写作者名（合集、合志这类多人的站用）；不写的作品照旧用上面的作者名
-  customAuthor: false
-  # 深色模式：auto 跟随系统并显示切换按钮；system 只跟随系统、不显示按钮；off 始终浅色
-  darkMode: auto

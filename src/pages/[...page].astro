@@ -32,7 +32,7 @@ const href = (n: number) => url(n > 1 ? `${n}/` : '');
       {lead.dek && <p class="dek">{lead.dek}</p>}
       {(site.features.byline || lead.guestAuthor) && <p class="byline">{ui.byline(lead.author)}</p>}
       <p class="meta">
-        {lead.updated && <span>{fmtDate(lead.updated)}</span>}
+        {site.features.updatedDate && lead.updated && <span>{fmtDate(lead.updated)}</span>}
         {site.features.wordCount && <span>{ui.words(lead.words)}</span>}
         {site.features.readingTime && <span>{ui.minutes(lead.minutes)}</span>}
       </p>
