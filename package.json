@@ -1,1 +1,1 @@
-{"devDependencies":{"astro":"4.16.19"},"name":"fanfic-site-template","private":true,"scripts":{"build":"astro build","dev":"astro dev","preview":"astro preview"},"type":"module","version":"0.1.0"}
+{"devDependencies":{"@fontsource/libre-caslon-display":"^5.3.0","@fontsource/libre-caslon-text":"^5.3.0","@fontsource/noto-serif-sc":"^5.3.1","astro":"4.16.19"},"name":"fanfic-site-template","private":true,"scripts":{"build":"astro build","dev":"astro dev","preview":"astro preview"},"type":"module","version":"0.1.0"}

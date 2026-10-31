@@ -57,6 +57,8 @@ export function countWords(body: string) {
 /** 正文开头做简介：跳过章注、AO3 提示和 "01" 这类分节小标题。 */
 export function excerpt(body: string, len = 80) {
   const paras = body
+    .replace(/<aside[\s\S]*?<\/aside>/gi, '')
+    .replace(/<[^>]+>/g, '')
     .split(/\n\s*\n/)
     .map((p) =>
       p

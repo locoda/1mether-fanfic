@@ -8,15 +8,11 @@ const total = cps.reduce((n, g) => n + g.works.length, 0);
 <Base section="cp" title={ui.cpIndex}>
   <div class="section-head">
     <h1>{ui.cpIndex}</h1>
-    <span class="meta">{cps.length} 对 · {ui.works(total)}</span>
+    <p class="meta"><span>{cps.length} 对</span><span>{ui.works(total)}</span></p>
   </div>
-  <ul class="index-grid" style="margin-top:12px">
+  <ul class="directory">
     {cps.map((g) => (
-      <li>
-        <a class="name" href={cpUrl(g.name)}>{g.name}</a>
-        <span class="leader" aria-hidden="true"></span>
-        <span class="count">{g.works.length}</span>
-      </li>
+      <li><a href={cpUrl(g.name)}><span class="name">{g.name}</span><span class="count">{ui.works(g.works.length)}</span></a></li>
     ))}
   </ul>
 </Base>

@@ -11,28 +11,26 @@ const { group } = Astro.props as { group: Group };
 const words = group.works.reduce((n, w) => n + w.words, 0);
 ---
 <Base section="series" title={group.name} description={`${site.author} 的系列「${group.name}」`}>
-  <div class="narrow">
-    <p class="kicker"><a href={url('series/')}>{ui.seriesIndex}</a></p>
-    <div class="section-head">
-      <h1>{group.name}</h1>
-      <span class="meta">{ui.works(group.works.length)} · {ui.words(words)}</span>
-    </div>
-    <ol class="work-list">
-      {group.works.map((w, i) => (
-        <li class="work-item">
-          <p class="kicker">
-            <span style="color:var(--muted)">{ui.seriesPart(w.seriesOrder ?? i + 1)}</span>
-            {w.cps.map((cp) => <><span class="sep">·</span><a href={cpUrl(cp)}>{cp}</a></>)}
-          </p>
-          <h3 class="title"><a href={w.url}>{w.title}</a></h3>
-          {w.dek && <p class="dek">{w.dek}</p>}
-          <p class="meta">
-            {w.updated && <time datetime={fmtDate(w.updated)}>{fmtDate(w.updated)}</time>}
-            <span>{ui.words(w.words)}</span>
-            {w.chapters.length > 1 && <span>{w.chapters.length} {ui.chapters}</span>}
-          </p>
-        </li>
-      ))}
-    </ol>
+  <div class="section-head" style="margin-bottom:40px">
+    <p class="rubric"><a href={url('series/')}>{ui.seriesIndex}</a></p>
+    <h1>{group.name}</h1>
+    <p class="meta"><span>{ui.works(group.works.length)}</span><span>{ui.words(words)}</span></p>
   </div>
+  <ol class="river" style="border-top:1px solid var(--rule)">
+    {group.works.map((w, i) => (
+      <li class="story">
+        <p class="rubric">
+          <span>{ui.seriesPart(w.seriesOrder ?? i + 1)}</span>
+          {w.cps.map((cp) => <><span class="sep">·</span><a href={cpUrl(cp)}>{cp}</a></>)}
+        </p>
+        <h3><a href={w.url}>{w.title}</a></h3>
+        {w.dek && <p class="dek">{w.dek}</p>}
+        <div class="side">
+          {w.updated && <span><time datetime={fmtDate(w.updated)}>{fmtDate(w.updated)}</time></span>}
+          <span>{ui.words(w.words)}</span>
+          {w.chapters.length > 1 && <span>{w.chapters.length} {ui.chapters}</span>}
+        </div>
+      </li>
+    ))}
+  </ol>
 </Base>

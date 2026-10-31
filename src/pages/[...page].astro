@@ -12,37 +12,45 @@ export const getStaticPaths = (async ({ paginate }) => {
 }) satisfies GetStaticPaths;
 
 const { page } = Astro.props as { page: Page<WorkInfo> };
-const all = page.data;
-const feature = site.featureLatest && page.currentPage === 1 ? all[0] : undefined;
-const rest = feature ? all.slice(1) : all;
+const lead = site.featureLatest && page.currentPage === 1 ? page.data[0] : undefined;
+const rest = lead ? page.data.slice(1) : page.data;
 const href = (n: number) => url(n > 1 ? `${n}/` : '');
 ---
 <Base section="home" title={page.currentPage > 1 ? `${ui.allWorks} · ${page.currentPage}` : undefined}>
   {page.total === 0 && <p>{ui.empty}</p>}
-  {feature && (
-    <article class="feature">
-      <span class="label">{ui.latest}{feature.updated && ` · ${fmtDate(feature.updated)}`}</span>
-      {(feature.cps.length > 0 || feature.series) && (
-        <p class="kicker">
-          {feature.cps.map((cp, i) => <>{i > 0 && <span class="sep">/</span>}<a href={cpUrl(cp)}>{cp}</a></>)}
-          {feature.cps.length > 0 && feature.series && <span class="sep">·</span>}
-          {feature.series && <a href={seriesUrl(feature.series)}>{feature.series}</a>}
+  {lead && (
+    <article class="lead-story">
+      <span class="label">{ui.latest}</span>
+      {(lead.cps.length > 0 || lead.series) && (
+        <p class="rubric">
+          {lead.cps.map((cp, i) => <>{i > 0 && <span class="sep">/</span>}<a href={cpUrl(cp)}>{cp}</a></>)}
+          {lead.cps.length > 0 && lead.series && <span class="sep">·</span>}
+          {lead.series && <a href={seriesUrl(lead.series)}>{lead.series}</a>}
         </p>
       )}
-      <h2 class="title"><a href={feature.url}>{feature.title}</a></h2>
-      {feature.dek && <p class="dek">{feature.dek}</p>}
+      <h2><a href={lead.url}>{lead.title}</a></h2>
+      {lead.dek && <p class="dek">{lead.dek}</p>}
+      <p class="byline">{ui.byline(site.author)}</p>
       <p class="meta">
-        <span>{site.author}</span>
-        <span>{ui.words(feature.words)}</span>
-        <span>{ui.minutes(feature.minutes)}</span>
+        {lead.updated && <span>{fmtDate(lead.updated)}</span>}
+        <span>{ui.words(lead.words)}</span>
+        <span>{ui.minutes(lead.minutes)}</span>
       </p>
     </article>
   )}
-  <div class="section-head">
-    <h1>{ui.allWorks}</h1>
-    <span class="meta">{ui.works(page.total)}{page.lastPage > 1 && ` · ${page.currentPage}/${page.lastPage}`}</span>
-  </div>
-  <ul class="work-list two-col">
+  {!lead && (
+    <div class="section-head" style="margin-bottom:40px">
+      <h1>{ui.allWorks}</h1>
+      <p class="meta"><span>{ui.works(page.total)}</span><span>{page.currentPage} / {page.lastPage}</span></p>
+    </div>
+  )}
+  {lead && (
+    <div class="river-head">
+      <h2>{ui.allWorks}</h2>
+      <p class="meta"><span>{ui.works(page.total)}</span></p>
+    </div>
+  )}
+  <ul class="river">
     {rest.map((w) => <WorkItem work={w} />)}
   </ul>
   <Pagination current={page.currentPage} last={page.lastPage} href={href} />

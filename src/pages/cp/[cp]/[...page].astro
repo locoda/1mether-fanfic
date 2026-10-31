@@ -14,12 +14,16 @@ export const getStaticPaths = (async ({ paginate }) => {
 const { page, group } = Astro.props as { page: Page<WorkInfo>; group: Group };
 ---
 <Base section="cp" title={`${group.name}${page.currentPage > 1 ? ` · ${page.currentPage}` : ''}`} description={`${site.author} 的 ${group.name} 作品`}>
-  <p class="kicker"><a href={url('cp/')}>{ui.cpIndex}</a></p>
-  <div class="section-head">
+  <div class="section-head" style="margin-bottom:40px">
+    <p class="rubric"><a href={url('cp/')}>{ui.cpIndex}</a></p>
     <h1>{group.name}</h1>
-    <span class="meta">{ui.works(page.total)}{group.latest && ` · ${fmtDate(group.latest)}`}</span>
+    <p class="meta">
+      <span>{ui.works(page.total)}</span>
+      {group.latest && <span>{fmtDate(group.latest)}</span>}
+      {page.lastPage > 1 && <span>{page.currentPage} / {page.lastPage}</span>}
+    </p>
   </div>
-  <ul class="work-list two-col">
+  <ul class="river" style="border-top:1px solid var(--rule)">
     {page.data.map((w) => <WorkItem work={w} showCp={w.cps.length > 1} />)}
   </ul>
   <Pagination current={page.currentPage} last={page.lastPage} href={(n) => cpUrl(group.name, n)} />

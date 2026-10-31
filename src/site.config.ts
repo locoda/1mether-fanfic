@@ -2,7 +2,7 @@
 // Site-wide settings: edit this one file, then add works under src/content.
 export const site = {
   title: '1mether 的同人站',
-  // 刊头下方的一行小字，可留空
+  // 页脚的一行小字，可留空
   tagline: '同人作品存档',
   author: '1mether',
   description: '1mether 的同人作品存档。',
@@ -14,8 +14,6 @@ export const site = {
   perPage: 20,
   // 阅读速度（字/分钟），用来估算阅读时长
   readingSpeed: 500,
-  // 强调色：栏目小标题、链接悬停等处使用
-  accent: '#b4191f',
   // 首页第一页是否把最新一篇做成大标题头条
   featureLatest: true,
 };
@@ -42,6 +40,8 @@ export const ui = {
   nextInSeries: '系列下一篇',
   moreFromCp: (cp: string) => `更多 ${cp}`,
   latest: '最新',
+  byline: (name: string) => `文 / ${name}`,
+  authorNote: '作者注',
   empty: '还没有作品。',
   notFound: '这一页不存在。',
   backHome: '回到首页',
