@@ -4,15 +4,37 @@
 #
 # 一篇作品 = src/content/works/ 下的一个 .yml 文件：作品信息 + 所有章节，在同一个页面里编辑。
 
-# 批量导入：在后台左边的「批量导入」里上传 .md / .txt / .docx，GitHub 会自动把它们转成作品
-# （见 .github/workflows/import.yml）。rename: false 保留原文件名，因为作品名就用文件名。
+# 批量导入：在后台左边的「批量导入」里上传 .md / .txt / .docx（很多篇可以打包成一个 .zip），
+# 再点页面上的「开始导入」，GitHub 会把它们转成作品（见 .github/workflows/import.yml）。
+# rename: false 保留原文件名，因为作品名就用文件名。
 media:
   - name: imports
     label: 批量导入
     input: imports
     output: imports
-    extensions: [md, txt, docx]
+    extensions: [md, txt, docx, zip]
     rename: false
+    actions:
+      - name: import-works
+        label: 开始导入
+        workflow: import.yml
+        confirm:
+          title: 导入这些文件？
+          message: 文件名就是作品名。下面填的信息会用在这一批的每一篇上，不填就留空，导入后也可以在「作品」里改。
+          button: 开始导入
+        fields:
+          - { name: cp, label: 配对（多个用逗号隔开）, type: text }
+          - { name: series, label: 系列, type: text }
+          - name: status
+            label: 状态
+            type: select
+            default: "none"
+            options:
+              - { label: 不填, value: "none" }
+              - { label: 连载中, value: "ongoing" }
+              - { label: 已完结, value: "finished" }
+          - { name: updated, label: 更新日期（如 2026-10-31，不填就是今天）, type: text }
+          - { name: author, label: 作者名（打开「每篇作品单独写作者名」才有用）, type: text }
 
 content:
   - name: works

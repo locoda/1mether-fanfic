@@ -39,12 +39,12 @@ src/lib/fonts.mjs                 可选的中文字体列表（id → 显示名
 scripts/import.mjs                npm run import：md / txt / docx → yml（解析在 scripts/lib/importers.mjs）
 scripts/export-md.mjs             npm run export：yml → export/<作品>.md（export/ 不进 git）
 scripts/lib/work-md.mjs           yml ⇄ md 的转换规则，导入导出共用
-scripts/import-uploads.mjs        后台「批量导入」：imports/ 里的文件 → yml，文件名当作品名
+scripts/import-uploads.mjs        后台「批量导入」：imports/ 里的文件和 zip → yml，文件名当作品名
 scripts/rename-works.mjs          时间戳文件名 → 作品名.yml（网址不变才改）
 scripts/deploy-target.mjs         读 site.yml 的 info.githubPages，给工作流判断要不要部署到 GitHub Pages
 scripts/release-name.mjs          「导出作品」工作流的 zip 命名：<仓库名>-works-<日期>.zip
 .github/workflows/deploy.yml      部署到 GitHub Pages
-.github/workflows/import.yml      imports/ 有新文件时运行 import-uploads.mjs，提交后触发部署
+.github/workflows/import.yml      后台「开始导入」按钮触发，运行 import-uploads.mjs，提交后触发部署
 .github/workflows/rename-works.yml  每天凌晨把后台新建的时间戳文件改名成作品名
 .github/workflows/export-release.yml  手动运行，把全部作品打包成 zip 发到 Releases（默认草稿）
 .pages.yml                        Pages CMS 配置
@@ -83,7 +83,9 @@ scripts/release-name.mjs          「导出作品」工作流的 zip 命名：<�
 
 ## 批量导入
 
-- 后台的「批量导入」是 Pages CMS 的 media 目录 `imports/`（`rename: false` 保留原文件名）。上传后推送触发 `import.yml`，跑 `scripts/import-uploads.mjs`
+- 后台的「批量导入」是 Pages CMS 的 media 目录 `imports/`（`rename: false` 保留原文件名）。Pages CMS 一次只能传一个文件，所以支持 `.zip`（jszip 解开，文件名先按 UTF-8 解码、失败再按 GB18030，兼容 Windows 自带压缩）
+- 上传本身不触发导入。media 上配了 Pages CMS 的 action「开始导入」，点击时弹框填配对、系列、状态、更新日期、作者，以 `workflow_dispatch` 的 `inputs.payload`（JSON，填的值在 `.inputs` 里）触发 `import.yml`，脚本从环境变量 `PAGES_CMS_PAYLOAD` 读。这些值只补文件里没写的项目；填了系列的按文件名顺序接在该系列现有最大 `seriesOrder` 后面
+- Pages CMS action 的 select 选项用 `label` / `value`（和字段的 `options.values` 写法不同），「不填」用 `none` 而不是空字符串
 - 作品名和 yml 文件名都是上传的文件名；已有同名作品不覆盖；成功的源文件删掉，失败的留下，原因写进 `imports/_导入失败说明.txt`
 - 工作流用 GITHUB_TOKEN 推送不会触发别的工作流，所以最后用 `gh workflow run deploy.yml` 手动触发部署（关掉 `githubPages` 时跳过）
 
@@ -146,6 +148,6 @@ git merge template/main        # 第一次同步要加 --allow-unrelated-histori
 
 ## 已知但还没验证的
 
-- 批量导入、改名工作流，Pages CMS 的 media 上传和时间戳文件名，都还没在真实的 GitHub / Pages CMS 上跑过
+- 批量导入（含 Pages CMS media 上的「开始导入」按钮和弹框传值）、改名工作流、时间戳文件名，都还没在真实的 GitHub / Pages CMS 上跑过
 - GitHub Pages 部署和「导出作品」工作流需要在 GitHub 上实际运行才能确认
 - Pages CMS 官方托管版是否收费，文档里没写
