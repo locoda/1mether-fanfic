@@ -1,6 +1,6 @@
 # 1mether 的同人站
 
-1mether 的同人作品存档。用 Astro 生成静态页，部署在 Cloudflare Pages（构建命令 `npm run build`，输出目录 `dist`）。
+1mether 的同人作品存档。用 Astro 7 生成静态页，部署在 Cloudflare Pages（构建命令 `npm run build`，输出目录 `dist`）。需要 Node.js 22.23.4 以上，版本写在 `.node-version`，Cloudflare 会自动读取。
 
 ## 功能
 
