@@ -17,6 +17,8 @@ info:
   #   - label: AO3
   #     href: https://archiveofourown.org/users/xxx
   links: []
+  # 网站部署在哪：github（GitHub Pages）或 cloudflare（Cloudflare Pages）
+  deploy: github
 
 # 显示设置
 display:

@@ -140,6 +140,14 @@ content:
             fields:
               - { name: label, label: 名称（如 AO3、微博）, type: string }
               - { name: href, label: 网址, type: string }
+          - name: deploy
+            label: 部署到
+            type: select
+            options:
+              values:
+                - { name: "github", label: GitHub Pages }
+                - { name: "cloudflare", label: Cloudflare Pages }
+            description: 用 Cloudflare Pages 的话选它，GitHub 就不会再重复部署一遍
 
       - name: display
         label: 显示设置

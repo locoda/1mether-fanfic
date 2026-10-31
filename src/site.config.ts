@@ -18,6 +18,8 @@ const SiteSchema = z.object({
   description: opt(z.string(), ''),
   lang: opt(z.string(), 'zh-CN'),
   links: opt(z.array(z.object({ label: z.string(), href: z.string() })), []),
+  // 只给 GitHub Actions 看（scripts/deploy-target.mjs），网站本身不用
+  deploy: opt(z.enum(['github', 'cloudflare']), 'github'),
   perPage: opt(z.number().int().positive(), 20),
   readingSpeed: opt(z.number().positive(), 500),
   features: opt(
@@ -49,11 +51,11 @@ const SiteSchema = z.object({
 //   works    作品设置：每篇作品的作者名、署名、连载状态、更新日期、字数……
 // 旧版不分组的写法（title、features 直接写在最外层）也照样能读。
 const GROUPS = {
-  info: ['title', 'tagline', 'author', 'description', 'lang', 'links'],
+  info: ['title', 'tagline', 'author', 'description', 'lang', 'links', 'deploy'],
   display: ['font', 'darkMode', 'perPage', 'leadStory', 'dropCap', 'endMark', 'progressBar', 'chapterPicker', 'keyboardNav'],
   works: ['customAuthor', 'byline', 'status', 'updatedDate', 'wordCount', 'readingTime', 'readingSpeed', 'autoSummary', 'related'],
 } as const;
-const TOP_LEVEL = new Set(['title', 'tagline', 'author', 'description', 'lang', 'links', 'perPage', 'readingSpeed']);
+const TOP_LEVEL = new Set(['title', 'tagline', 'author', 'description', 'lang', 'links', 'deploy', 'perPage', 'readingSpeed']);
 
 /** 把分组写法摊平成内部使用的结构：{ title, …, perPage, readingSpeed, features: { … } } */
 function flatten(raw: Record<string, any>) {
