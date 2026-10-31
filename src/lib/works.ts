@@ -118,7 +118,7 @@ export interface Group {
   latest?: Date;
 }
 
-/** CP 目录：按作品数倒序，同数按名字。 */
+/** 配对目录：按作品数倒序，同数按名字。 */
 export async function loadCps(): Promise<Group[]> {
   const works = await loadWorks();
   const map = new Map<string, Group>();

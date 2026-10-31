@@ -21,7 +21,7 @@ export const site = {
 // 界面文字。做成模板后，换语言只改这里。
 export const ui = {
   allWorks: '全部作品',
-  cpIndex: 'CP 目录',
+  cpIndex: '配对',
   seriesIndex: '系列',
   chapters: '章',
   chapterOf: (n: number, total: number) => `第 ${n} 章 / 共 ${total} 章`,
