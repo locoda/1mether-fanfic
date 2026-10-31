@@ -120,6 +120,20 @@ updated: 2022-09-24
 
 正文是纯文本编辑框，写法和 Markdown 一样：空一行是分段，`**粗体**`。配置在仓库根目录的 `.pages.yml`。
 
+## 从模板同步更新
+
+这个站的代码来自 [fanfic-site-template](https://github.com/locoda/fanfic-site-template)，模板有改进时可以同步过来：
+
+```
+git remote add template https://github.com/locoda/fanfic-site-template.git   # 只需要第一次
+git fetch template
+git merge template/main
+```
+
+有冲突时，`src/site.yml`、`src/content/works/`、`README.md` 保留这里的版本，其他文件一般用模板的版本；合并进来的示例作品（`example-*.yml`）和 `LICENSE` 删掉即可。
+
+**注意**：包含模板合并的 PR 要用「Create a merge commit」合并，不要用 squash，否则和模板的关联会断掉，下次同步又要从头解决冲突。
+
 ## 本地预览
 
 ```
