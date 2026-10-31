@@ -1,0 +1,4 @@
+# 同步模板（git merge template/main）时，这些站点自己的文件保留本站版本。
+# 需要本地配置一次：git config merge.ours.driver true
+README.md merge=ours
+src/site.yml merge=ours
