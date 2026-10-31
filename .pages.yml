@@ -86,3 +86,72 @@ content:
             type: text
             required: true
             description: 空一行是分段；作者注写在 <aside class="author-note" aria-label="作者注"> 和 </aside> 之间
+
+  # ---------- 网站设置：站名、作者、链接、功能开关 ----------
+  - name: settings
+    label: 网站设置
+    type: file
+    path: src/site.yml
+    format: yaml
+    fields:
+      - name: title
+        label: 站名
+        type: string
+        required: true
+      - name: tagline
+        label: 页脚小字
+        type: string
+      - name: author
+        label: 作者名
+        type: string
+        description: 用在署名和页脚
+      - name: description
+        label: 网站简介
+        type: text
+        description: 搜索引擎和分享链接时显示
+      - name: lang
+        label: 页面语言
+        type: string
+        description: 一般不用改，简体中文是 zh-CN
+      - name: links
+        label: 页脚链接
+        type: object
+        list: true
+        description: 例如 AO3、微博、Lofter 主页
+        fields:
+          - name: label
+            label: 名称
+            type: string
+          - name: href
+            label: 网址
+            type: string
+      - name: perPage
+        label: 每页作品数
+        type: number
+      - name: readingSpeed
+        label: 阅读速度（字/分钟）
+        type: number
+        description: 用来估算阅读时长
+      - name: features
+        label: 功能开关
+        type: object
+        fields:
+          - { name: leadStory, label: 首页头条（最新一篇做成大标题）, type: boolean }
+          - { name: dropCap, label: 首字放大, type: boolean }
+          - { name: endMark, label: 完结章文末 ♦, type: boolean }
+          - { name: progressBar, label: 阅读进度条, type: boolean }
+          - { name: wordCount, label: 显示字数, type: boolean }
+          - { name: readingTime, label: 显示阅读时长, type: boolean }
+          - { name: byline, label: 「文 / 作者」署名, type: boolean }
+          - { name: chapterPicker, label: 顶部选章菜单, type: boolean }
+          - { name: keyboardNav, label: 键盘 ← → 翻章, type: boolean }
+          - { name: related, label: 文末同 CP 推荐, type: boolean }
+          - { name: autoSummary, label: 没写简介时自动取正文开头, type: boolean }
+          - name: darkMode
+            label: 深色模式
+            type: select
+            options:
+              values:
+                - { name: "auto", label: 跟随系统，并显示切换按钮 }
+                - { name: "system", label: 只跟随系统 }
+                - { name: "off", label: 始终浅色 }
