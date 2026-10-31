@@ -1,0 +1,65 @@
+# 网页后台「批量导入」上传了文件后自动运行：把 imports/ 里的 .md / .txt / .docx 转成作品。
+# 作品名和文件名都用上传的文件名；失败的文件会留在 imports/，原因写在 imports/_导入失败说明.txt。
+name: 批量导入作品
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'imports/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: import
+  cancel-in-progress: false
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+
+      - run: npm ci
+
+      - name: 导入
+        run: node scripts/import-uploads.mjs
+        env:
+          TZ: Asia/Shanghai
+
+      - name: 提交导入结果
+        id: commit
+        run: |
+          git add -A imports src/content/works
+          if git diff --cached --quiet; then
+            echo "没有新导入的作品"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "feat: 批量导入作品"
+          # 导入期间如果又有人保存了内容，先接上最新的 main 再推
+          git pull --rebase origin main
+          git push
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      # 工作流自己推送的提交不会触发其他工作流，所以要手动触发一次 GitHub Pages 部署。
+      # Cloudflare Pages 会自己检测到推送，不需要这一步；关掉了「部署到 GitHub Pages」时也跳过。
+      - name: 看网站部署在哪
+        id: target
+        if: steps.commit.outputs.changed == 'true'
+        run: node scripts/deploy-target.mjs
+
+      - name: 重新部署网站
+        if: steps.commit.outputs.changed == 'true' && steps.target.outputs.github == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run deploy.yml --ref main

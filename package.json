@@ -1,7 +1,11 @@
 {
   "devDependencies": {
     "@astrojs/markdown-remark": "^7.3.3",
+    "@chinese-fonts/jhlst": "^3.0.0",
+    "@chinese-fonts/lxgw-neo-zhi-song": "^2.0.0",
+    "@chinese-fonts/lxgwwenkai": "^3.0.0",
     "@chinese-fonts/sypxzs": "^3.0.0",
+    "@chinese-fonts/zqfs": "^3.0.0",
     "@fontsource/libre-caslon-display": "^5.3.0",
     "@fontsource/libre-caslon-text": "^5.3.0",
     "astro": "^7.4.0",
