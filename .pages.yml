@@ -69,7 +69,7 @@ content:
       - name: chapters
         label: 章节
         type: object
-        description: 点「添加」多一章，拖动调整顺序；单章作品只留一章就行
+        # 列表字段的 description 会在每一章下面重复显示，所以不写；用法见 README「网页后台」
         list:
           min: 1
           collapsible:
@@ -85,7 +85,7 @@ content:
             label: 正文
             type: text
             required: true
-            description: 空一行是分段；作者注写在 <aside class="author-note" aria-label="作者注"> 和 </aside> 之间
+            description: 空一行是分段
 
   # ---------- 网站设置：站名、作者、链接、功能开关 ----------
   - name: settings
