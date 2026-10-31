@@ -1,12 +1,13 @@
 ---
-// 自托管字体：西文 Libre Caslon；中文思源屏显臻宋（中文网字计划按字频切片，浏览器只下载用到的切片）
-import '@chinese-fonts/sypxzs/dist/思源屏显臻宋/result.css';
+// 自托管字体：中文是网站设置里选的那一款（见 src/lib/fonts.mjs、astro.config.mjs），西文 Libre Caslon
+import 'site-font';
 import '@fontsource/libre-caslon-text/400.css';
 import '@fontsource/libre-caslon-text/400-italic.css';
 import '@fontsource/libre-caslon-display/400.css';
 import '../styles/global.css';
 import { site, ui } from '../site.config';
 import { url, loadCps, loadSeries } from '../lib/works';
+import { FONTS } from '../lib/fonts.mjs';
 
 interface Props {
   title?: string;
@@ -48,6 +49,7 @@ const darkMode = site.features.darkMode;
       try { const t = localStorage.getItem('theme'); if (t) document.documentElement.dataset.theme = t; } catch {}
     </script>
   )}
+  <style is:inline set:html={`:root{--cn-font:"${FONTS[site.features.font].family}"}`}></style>
 </head>
 <body>
   <header class="site-header">

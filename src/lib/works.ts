@@ -4,8 +4,28 @@ import { site } from '../site.config';
 
 type Entry = CollectionEntry<'chapters'>;
 
-// 作品文件名 → 网址（和之前的规则一致：小写、去掉标点，中文保留）
+// 作品文件名 → 网址（小写、去掉标点，中文保留）
 const folderSlug = (folder: string) => new GithubSlugger().slug(folder);
+
+// 网页后台新建的作品，文件名是创建时间（如 20261031-203512），因为后台生成文件名时会把中文删掉。
+// 这种作品的网址改用作品名生成；其他作品（导入的、手动建的）照旧用文件名。
+const AUTO_NAME = /^\d{8}-\d{6}$/;
+
+/** 给每篇作品分配网址，重名时在后面加 -2、-3 */
+function assignSlugs(entries: { id: string; data: { title: string } }[]) {
+  const slugs = new Map<string, string>();
+  const used = new Set<string>();
+  // 先给用文件名的作品分配，保证它们的网址不会因为新作品而变
+  const ordered = [...entries].sort((a, b) => Number(AUTO_NAME.test(a.id)) - Number(AUTO_NAME.test(b.id)) || a.id.localeCompare(b.id));
+  for (const e of ordered) {
+    const base = (AUTO_NAME.test(e.id) && folderSlug(e.data.title)) || folderSlug(e.id) || e.id;
+    let slug = base;
+    for (let n = 2; used.has(slug); n++) slug = `${base}-${n}`;
+    used.add(slug);
+    slugs.set(e.id, slug);
+  }
+  return slugs;
+}
 
 export interface Chapter {
   /** 原始内容条目（render() / body 从这里取） */
@@ -103,10 +123,11 @@ export function loadWorks(): Promise<WorkInfo[]> {
       byWork.get(work)!.push(e);
     }
 
+    const slugs = assignSlugs(infoEntries);
     const infos = infoEntries.map((info): WorkInfo => {
       const d = info.data;
       const title = d.title;
-      const slug = folderSlug(info.id);
+      const slug = slugs.get(info.id)!;
       const raw = (byWork.get(info.id) ?? []).sort((a, b) => a.data.order - b.data.order);
       const chapters: Chapter[] = raw.map((e) => {
         const order = e.data.order;

@@ -4,7 +4,9 @@ info:
   author: 1mether
   description: 1mether 的同人作品存档。
   lang: zh-CN
+  githubPages: false
 display:
+  font: sypxzs
   darkMode: auto
   perPage: 20
   leadStory: true
