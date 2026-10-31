@@ -14,40 +14,56 @@
 
 ## 写作品
 
-一篇作品 = 一个作品文件 + 一个章节文件夹：
+**一篇作品 = `src/content/works/` 下的一个文件夹。** 文件夹名就是网址，建议用作品名或英文缩写。
 
 ```
-src/content/works/交换律.md          ← 作品信息
-src/content/chapters/交换律/01.md    ← 第一章
-src/content/chapters/交换律/02.md    ← 第二章……
+src/content/works/
+  溶/
+    index.md     ← 作品信息
+    01.md        ← 正文
+  性别问题/
+    index.md
+    01.md        ← 第一章
+    02.md        ← 第二章
+    03.md
+    04.md
 ```
 
-作品文件只有 frontmatter，除了 `title` 都可以不写：
+### index.md：作品信息
+
+只写开头这一段，下面不用写正文。除了 `title`，其他都可以不写：
 
 ```yaml
 ---
-title: "交换律"
-cp: "辉树"              # 多个 CP 写成 ["辉树", "世界树"]
-updated: 2026-02-28     # 决定排序
+title: "性别问题"
+cp: "辉慧"              # 多个 CP 写成 ["辉慧", "辉树"]
+updated: 2022-09-24     # 决定首页排序
 series: "度量空间"       # 同名系列自动归在一起
 seriesOrder: 4          # 系列里的第几篇
 summary: "一句话简介"     # 不写就自动取正文开头
-status: finished        # ongoing / finished，不写不显示
+status: finished        # ongoing（连载中）/ finished（已完结），不写不显示
 ---
 ```
 
-章节文件：
+### 01.md、02.md……：章节
 
-```yaml
+按文件名排序，文件名就是章节网址（`/works/性别问题/02/`）。多章作品在开头写章节名：
+
+```markdown
 ---
-title: "正文"
-order: 1
+title: "番外/慧人的烦恼"
 ---
 
-正文……
+木村慧人最近不太开心。
 ```
 
-作者注（可选，放在正文前或正文后）：
+单章作品不用写章节名，直接写正文就行。
+
+**加一章** = 在文件夹里新建 `05.md`；**加一篇** = 新建一个文件夹，放 `index.md` 和 `01.md`。
+
+### 作者注
+
+放在正文前或正文后：
 
 ```html
 <aside class="author-note" aria-label="作者注">
@@ -59,7 +75,7 @@ order: 1
 </aside>
 ```
 
-单行的作者注也可以直接写成一段 `作者注：……`，会自动转换。
+单行的作者注也可以直接写成一段 `作者注：……`，会自动转换。正文后的作者注把 `aria-label` 写成 `章末注`。
 
 ## 本地预览
 

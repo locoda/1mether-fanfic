@@ -1,12 +1,12 @@
 ---
 import Base from '../../../layouts/Base.astro';
 import { site, ui } from '../../../site.config';
-import { loadWorks, loadSeries, chapterUrl, cpUrl, seriesUrl, fmtDate, countWords, type WorkInfo, type Chapter } from '../../../lib/works';
+import { loadWorks, loadSeries, cpUrl, seriesUrl, fmtDate, countWords, type WorkInfo, type Chapter } from '../../../lib/works';
 
 export async function getStaticPaths() {
   const works = await loadWorks();
   return works.flatMap((w) => w.chapters.map((c) => ({
-    params: { work: w.slug, chapter: c.slug.split('/').slice(1).join('/') },
+    params: { work: w.slug, chapter: c.key },
     props: { work: w, chapter: c },
   })));
 }
@@ -18,11 +18,11 @@ const prev = chapters[idx - 1];
 const next = chapters[idx + 1];
 const multi = chapters.length > 1;
 const isLast = idx === chapters.length - 1;
-const { Content } = await chapter.render();
-const chapterWords = countWords(chapter.body);
+const { Content } = await chapter.entry.render();
+const chapterWords = countWords(chapter.entry.body);
 const chapterMinutes = Math.max(1, Math.round(chapterWords / site.readingSpeed));
 // 单章作品里，章节标题常常就是作品名，重复就不显示
-const showChapterTitle = multi || chapter.data.title.trim() !== work.title.trim();
+const showChapterTitle = multi || chapter.title.trim() !== work.title.trim();
 
 // 系列：本作的前后篇
 const seriesGroup = work.series ? (await loadSeries()).find((s) => s.name === work.series) : undefined;
@@ -33,10 +33,10 @@ const nextWork = seriesGroup?.works[sIdx + 1];
 // 文末左右翻页：先找本作的上/下一章；到头了就接系列的上/下一篇
 type Link = { href: string; label: string; title: string };
 const prevLink: Link | undefined = prev
-  ? { href: chapterUrl(prev), label: ui.prevChapter, title: prev.data.title }
+  ? { href: prev.url, label: ui.prevChapter, title: prev.title }
   : prevWork ? { href: prevWork.url, label: ui.prevInSeries, title: prevWork.title } : undefined;
 const nextLink: Link | undefined = next
-  ? { href: chapterUrl(next), label: ui.nextChapter, title: next.data.title }
+  ? { href: next.url, label: ui.nextChapter, title: next.title }
   : nextWork ? { href: nextWork.url, label: ui.nextInSeries, title: nextWork.title } : undefined;
 
 // 同 CP 的其他作品（最近 5 篇，排除同系列已列出的）
@@ -46,7 +46,7 @@ const related = work.cps.length
   ? all.filter((w) => w.slug !== work.slug && !inSeries.has(w.slug) && w.cps.some((c) => work.cps.includes(c))).slice(0, 5)
   : [];
 ---
-<Base title={multi ? `${chapter.data.title} · ${work.title}` : work.title} description={work.dek}>
+<Base title={multi ? `${chapter.title} · ${work.title}` : work.title} description={work.dek}>
   <div class="progress" aria-hidden="true"></div>
   <article>
     <header class="article-head">
@@ -59,7 +59,7 @@ const related = work.cps.length
       )}
       <h1>{work.title}</h1>
       {showChapterTitle && (
-        <p class="chapter-title">{multi && <span class="no">{String(idx + 1).padStart(2, '0')}</span>}{chapter.data.title}</p>
+        <p class="chapter-title">{multi && <span class="no">{String(idx + 1).padStart(2, '0')}</span>}{chapter.title}</p>
       )}
       <p class="byline">{ui.byline(site.author)}</p>
       <div class="meta">
@@ -70,8 +70,8 @@ const related = work.cps.length
             <ol>
               {chapters.map((c, i) => (
                 <li class={c.slug === chapter.slug ? 'current' : ''}>
-                  <a href={chapterUrl(c)} aria-current={c.slug === chapter.slug ? 'page' : undefined}>
-                    <span class="no">{String(i + 1).padStart(2, '0')}</span>{c.data.title}
+                  <a href={c.url} aria-current={c.slug === chapter.slug ? 'page' : undefined}>
+                    <span class="no">{String(i + 1).padStart(2, '0')}</span>{c.title}
                   </a>
                 </li>
               ))}
@@ -115,7 +115,7 @@ const related = work.cps.length
             {chapters.map((c, i) => (
               <li class={c.slug === chapter.slug ? 'current' : ''}>
                 <span class="no">{String(i + 1).padStart(2, '0')}</span>
-                {c.slug === chapter.slug ? <span aria-current="page">{c.data.title}</span> : <a href={chapterUrl(c)}>{c.data.title}</a>}
+                {c.slug === chapter.slug ? <span aria-current="page">{c.title}</span> : <a href={c.url}>{c.title}</a>}
               </li>
             ))}
           </ol>
