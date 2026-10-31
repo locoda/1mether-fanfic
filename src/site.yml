@@ -15,7 +15,7 @@ display:
   keyboardNav: true
 works:
   customAuthor: false
-  byline: true
+  byline: false
   status: true
   updatedDate: true
   wordCount: true
