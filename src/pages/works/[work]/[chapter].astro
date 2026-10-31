@@ -53,12 +53,25 @@ const related = work.cps.length
         <p class="chapter-title">{multi && <span class="no">{String(idx + 1).padStart(2, '0')}</span>}{chapter.data.title}</p>
       )}
       <p class="byline">{ui.byline(site.author)}</p>
-      <p class="meta">
+      <div class="meta">
         {work.updated && <time datetime={fmtDate(work.updated)}>{fmtDate(work.updated)}</time>}
-        {multi && <span>{ui.chapterOf(idx + 1, chapters.length)}</span>}
+        {multi && (
+          <details class="ch-picker">
+            <summary aria-label={ui.allChapters}>{ui.chapterOf(idx + 1, chapters.length)}<span class="caret" aria-hidden="true"></span></summary>
+            <ol>
+              {chapters.map((c, i) => (
+                <li class={c.slug === chapter.slug ? 'current' : ''}>
+                  <a href={chapterUrl(c)} aria-current={c.slug === chapter.slug ? 'page' : undefined}>
+                    <span class="no">{String(i + 1).padStart(2, '0')}</span>{c.data.title}
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </details>
+        )}
         <span>{ui.words(chapterWords)}</span>
         <span>{ui.minutes(chapterMinutes)}</span>
-      </p>
+      </div>
     </header>
     <div class={`chapter-body${isLast ? ' is-end' : ''}`}><Content /></div>
   </article>
@@ -136,6 +149,15 @@ const related = work.cps.length
     addEventListener('scroll', update, { passive: true });
     addEventListener('resize', update);
     update();
+    // 顶部选章：点外面或按 Esc 收起，展开时把当前章滚到可见处
+    const picker = document.querySelector('.ch-picker');
+    if (picker) {
+      picker.addEventListener('toggle', () => {
+        if (picker.open) picker.querySelector('li.current')?.scrollIntoView({ block: 'nearest' });
+      });
+      document.addEventListener('click', (e) => { if (picker.open && !picker.contains(e.target)) picker.open = false; });
+      addEventListener('keydown', (e) => { if (e.key === 'Escape' && picker.open) { picker.open = false; picker.querySelector('summary').focus(); } });
+    }
     // 键盘 ← → 翻章
     addEventListener('keydown', (e) => {
       if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey || /input|textarea/i.test(e.target.tagName)) return;
