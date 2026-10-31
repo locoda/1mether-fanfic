@@ -48,7 +48,7 @@ const related = work.cps.length
   : [];
 ---
 <Base title={multi ? `${chapter.title} · ${work.title}` : work.title} description={work.dek}>
-  <div class="progress" aria-hidden="true"></div>
+  <div class="progress" aria-hidden="true"><span></span></div>
   <article>
     <header class="article-head">
       {(work.cps.length > 0 || work.series) && (
@@ -166,7 +166,7 @@ const related = work.cps.length
 
   <script is:inline define:vars={{ prevHref: prevLink?.href ?? null, nextHref: nextLink?.href ?? null }}>
     // 阅读进度条
-    const bar = document.querySelector('.progress');
+    const bar = document.querySelector('.progress span');
     const body = document.querySelector('.chapter-body');
     if (!bar || !body) throw 0;
     const update = () => {

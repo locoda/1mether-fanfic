@@ -332,14 +332,21 @@ footer .copy { width: 100%; font-family: var(--sans); font-size: 12px; color: va
 .series-card .meta { margin-top: 14px; }
 
 /* ---------------- Article ---------------- */
+/* 阅读进度条：整条底色和页面同色、不透明，文字滚上去会被挡住，而不是被一条线「划掉」 */
 .progress {
   position: fixed;
   inset: 0 0 auto 0;
+  height: 6px;
+  background: var(--bg);
+  z-index: 10;
+  pointer-events: none;
+}
+.progress span {
+  display: block;
   height: 2px;
   background: var(--ink);
   transform-origin: 0 50%;
   transform: scaleX(0);
-  z-index: 10;
 }
 .article-head {
   max-width: 900px;
