@@ -36,7 +36,6 @@ jobs:
       - name: 导入
         run: node scripts/import-uploads.mjs
         env:
-          TZ: Asia/Shanghai
           PAGES_CMS_PAYLOAD: ${{ inputs.payload }}
 
       - name: 提交导入结果

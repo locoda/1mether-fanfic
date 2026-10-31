@@ -33,7 +33,7 @@ media:
               - { label: 不填, value: "none" }
               - { label: 连载中, value: "ongoing" }
               - { label: 已完结, value: "finished" }
-          - { name: updated, label: 更新日期（如 2026-10-31，不填就是今天）, type: text }
+          - { name: updated, label: 更新日期（如 2026-10-31，可以不填）, type: text }
           - { name: author, label: 作者名（打开「每篇作品单独写作者名」才有用）, type: text }
 
 content:
@@ -76,10 +76,9 @@ content:
       - name: updated
         label: 更新日期
         type: date
-        default: ""
         options:
           format: yyyy-MM-dd
-        description: 决定首页排序
+        description: 决定首页排序，新建时默认是当天；可以清空，没有日期的排在最后
 
       - name: summary
         label: 简介

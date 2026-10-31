@@ -6,7 +6,7 @@
 // - .zip 里可以放很多篇（子文件夹也行），一次上传就是一批
 // - 后台点「开始导入」时填的配对、系列、状态、更新日期、作者，会用在这一批的每一篇上；
 //   md 开头自己写了的项目以 md 为准。填了系列的，按文件名顺序排在这个系列已有作品的后面
-// - 没写更新日期的，用今天（北京时间），这样新导入的作品排在首页前面
+// - 更新日期：文件里写了或者点按钮时填了才有，否则不写（没有日期的作品排在首页最后）
 // - 导入成功的源文件会删掉；失败的留在 imports/ 里，原因写进 imports/_导入失败说明.txt
 // - 已经有同名作品时不会覆盖，算作失败
 // 由 .github/workflows/import.yml 运行（后台「批量导入」页面的「开始导入」按钮）；本地也可以手动运行。
@@ -25,7 +25,6 @@ const REPORT = join(IMPORTS_DIR, '_导入失败说明.txt');
 const SUPPORTED = new Set(['.md', '.markdown', '.txt', '.docx']);
 
 const exists = (p) => access(p).then(() => true, () => false);
-const today = new Intl.DateTimeFormat('en-CA', { timeZone: process.env.TZ || 'Asia/Shanghai' }).format(new Date());
 const skip = (name) => name.startsWith('.') || name.startsWith('_');
 
 // ---------------------------------------------------------------- 后台填的作品信息
@@ -152,7 +151,6 @@ for (const item of items) {
       counters.set(work.info.series, n);
       work.info.seriesOrder = n;
     }
-    work.info.updated ??= today;
     // 按后台表单的顺序排一下，打开 yml 时好找
     const order = ['title', 'author', 'cp', 'updated', 'summary', 'series', 'seriesOrder', 'status'];
     work.info = Object.fromEntries(Object.entries(work.info).sort(([a], [b]) => (order.indexOf(a) + 1 || 99) - (order.indexOf(b) + 1 || 99)));
