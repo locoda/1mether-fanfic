@@ -20,7 +20,7 @@ const words = group.works.reduce((n, w) => n + w.words, 0);
     {group.works.map((w, i) => (
       <li class="story">
         <p class="rubric">
-          <span>{ui.seriesPart(w.seriesOrder ?? i + 1)}</span>
+          <span style="color:var(--muted)">{ui.seriesPart(w.seriesOrder ?? i + 1)}</span>
           {w.cps.map((cp) => <><span class="sep">·</span><a href={cpUrl(cp)}>{cp}</a></>)}
         </p>
         <h3><a href={w.url}>{w.title}</a></h3>

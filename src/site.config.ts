@@ -35,7 +35,8 @@ export const ui = {
   allChapters: '全部章节',
   startReading: '开始阅读',
   inSeries: '收录于系列',
-  seriesPart: (n: number) => `第 ${n} 篇`,
+  // 系列里的序号，和章节一样只写数字：01、02……
+  seriesPart: (n: number) => String(n).padStart(2, '0'),
   prevInSeries: '系列上一篇',
   nextInSeries: '系列下一篇',
   moreFromCp: (cp: string) => `更多${cp}作品`,
