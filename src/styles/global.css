@@ -2,7 +2,7 @@
    Magazine theme modelled on The New Yorker's web edition:
    pure white page, black ink, serif headlines at regular weight,
    small sans-serif labels, hairline rules, drop cap, ♦ end mark.
-   Fonts are self-hosted (Base.astro + scripts/build-fonts.mjs), no Google Fonts.
+   Fonts are self-hosted via npm packages (see Base.astro), no Google Fonts.
    ------------------------------------------------------------------ */
 :root {
   color-scheme: light;
@@ -13,8 +13,8 @@
   --rule: #000000;
   --hair: #e0e0e0;
   /* 正文中文优先，这样引号、省略号用中文字形；标题西文优先，用 Caslon */
-  --serif: "WenJin Mincho", "Songti SC", "STSong", "Libre Caslon Text", serif;
-  --display: "Libre Caslon Display", "WenJin Mincho", "Songti SC", "STSong", serif;
+  --serif: "Source Han Serif CN for Display", "Songti SC", "STSong", "Libre Caslon Text", serif;
+  --display: "Libre Caslon Display", "Source Han Serif CN for Display", "Songti SC", "STSong", serif;
   --sans: "Helvetica Neue", Helvetica, Arial, "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", sans-serif;
   --measure: 660px;
   --river: 800px;
@@ -51,7 +51,7 @@ body {
   font-family: var(--serif);
   font-size: 18px;
   line-height: 1.75;
-  /* 中文没有斜体，不让浏览器伪造；文津宋体只有一个字重，粗体允许合成 */
+  /* 中文没有斜体，不让浏览器伪造；中文字体只有一个字重，粗体允许合成 */
   font-synthesis: weight;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;

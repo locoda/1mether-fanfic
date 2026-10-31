@@ -1,5 +1,6 @@
 ---
-// 自托管字体：西文 Libre Caslon；中文文津宋体由 scripts/build-fonts.mjs 在构建前裁剪生成
+// 自托管字体：西文 Libre Caslon；中文思源屏显臻宋（中文网字计划按字频切片，浏览器只下载用到的切片）
+import '@chinese-fonts/sypxzs/dist/思源屏显臻宋/result.css';
 import '@fontsource/libre-caslon-text/400.css';
 import '@fontsource/libre-caslon-text/400-italic.css';
 import '@fontsource/libre-caslon-display/400.css';
@@ -28,7 +29,6 @@ const nav = [
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{pageTitle}</title>
   <meta name="description" content={description} />
-  <link rel="stylesheet" href={url('fonts/wenjin/wenjin.css')} />
   <meta property="og:title" content={pageTitle} />
   <meta property="og:description" content={description} />
   <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />

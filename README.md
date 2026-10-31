@@ -4,7 +4,7 @@
 
 ## 功能
 
-- **纽约客式排版**：纯白底、黑字、细线分隔；标题用常规字重的大号衬线（西文 Libre Caslon，中文文津宋体），小标签用无衬线；首字下沉，完结章文末 ♦。字体自托管，国内也能正常加载。自带深色模式。
+- **纽约客式排版**：纯白底、黑字、细线分隔；标题用常规字重的大号衬线（西文 Libre Caslon，中文思源屏显臻宋），小标签用无衬线；首字下沉，完结章文末 ♦。字体自托管，国内也能正常加载。自带深色模式。
 - **首页**：最新一篇做头条，其余按更新时间倒序，自动分页（每页篇数在 `site.config.ts` 里改）。
 - **配对**：`/cp/` 列出全部 CP 和篇数；每个 CP 有自己的分页列表 `/cp/<CP>/`。
 - **系列**：`/series/` 列出全部系列；同系列的作品在文末互相链接，有上一篇 / 下一篇。
@@ -71,7 +71,9 @@ npm run build    # 构建到 dist/
 
 ## 字体
 
-中文用[文津宋体](https://github.com/takushun-wu/WenJinMincho)（SIL OFL 1.1）。`npm run build` / `npm run dev` 之前会自动运行 `scripts/build-fonts.mjs`，扫描 `src/` 里用到的字，只把这些字裁剪进 `public/fonts/wenjin/`（约 1MB，不进 git）。新增作品后重新构建即可。
+- 中文：思源屏显臻宋（思源宋体的屏幕显示优化版，基于 SIL OFL 1.1 的思源宋体），来自[中文网字计划](https://github.com/KonghaYao/chinese-free-web-font-storage)的 npm 包 `@chinese-fonts/sypxzs`，已按字频切片，浏览器只下载页面用到的部分。
+- 西文：Libre Caslon Text / Display（OFL），来自 Fontsource。
+- 字体文件随站点一起部署，不依赖外部 CDN，国内也能正常加载。
 
 ## 做成自己的站（模板用法）
 
