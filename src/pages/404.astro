@@ -1,0 +1,12 @@
+---
+import Base from '../layouts/Base.astro';
+import { ui } from '../site.config';
+import { url } from '../lib/works';
+---
+<Base title="404">
+  <div class="not-found">
+    <p class="label">404</p>
+    <h1>{ui.notFound}</h1>
+    <p><a href={url()}>{ui.backHome}</a></p>
+  </div>
+</Base>

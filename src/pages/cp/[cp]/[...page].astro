@@ -1,0 +1,30 @@
+---
+import type { GetStaticPaths, Page } from 'astro';
+import Base from '../../../layouts/Base.astro';
+import WorkItem from '../../../components/WorkItem.astro';
+import Pagination from '../../../components/Pagination.astro';
+import { site, ui } from '../../../site.config';
+import { loadCps, cpUrl, url, fmtDate, type WorkInfo, type Group } from '../../../lib/works';
+
+export const getStaticPaths = (async ({ paginate }) => {
+  const cps = await loadCps();
+  return cps.flatMap((g) => paginate(g.works, { pageSize: site.perPage, params: { cp: g.slug }, props: { group: g } }));
+}) satisfies GetStaticPaths;
+
+const { page, group } = Astro.props as { page: Page<WorkInfo>; group: Group };
+---
+<Base section="cp" title={`${group.name}${page.currentPage > 1 ? ` · ${page.currentPage}` : ''}`} description={`${site.author} 的 ${group.name} 作品`}>
+  <div class="section-head" style="margin-bottom:40px">
+    <p class="rubric"><a href={url('cp/')}>{ui.cpIndex}</a></p>
+    <h1>{group.name}</h1>
+    <p class="meta">
+      <span>{ui.works(page.total)}</span>
+      {group.latest && <span>{fmtDate(group.latest)}</span>}
+      {page.lastPage > 1 && <span>{page.currentPage} / {page.lastPage}</span>}
+    </p>
+  </div>
+  <ul class="river" style="border-top:1px solid var(--rule)">
+    {page.data.map((w) => <WorkItem work={w} showCp={w.cps.length > 1} />)}
+  </ul>
+  <Pagination current={page.currentPage} last={page.lastPage} href={(n) => cpUrl(group.name, n)} />
+</Base>

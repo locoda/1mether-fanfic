@@ -1,0 +1,29 @@
+---
+import Base from '../../layouts/Base.astro';
+import { ui } from '../../site.config';
+import { loadSeries, seriesUrl, fmtDate } from '../../lib/works';
+const series = await loadSeries();
+---
+<Base section="series" title={ui.seriesIndex}>
+  <div class="section-head">
+    <h1>{ui.seriesIndex}</h1>
+    <p class="meta"><span>{series.length} 个系列</span></p>
+  </div>
+  {series.length === 0 && <p style="text-align:center">还没有系列。</p>}
+  <div class="series-list">
+    {series.map((s) => {
+      const cps = [...new Set(s.works.flatMap((w) => w.cps))];
+      return (
+        <section class="series-card">
+          {cps.length > 0 && <p class="rubric">{cps.join(' / ')}</p>}
+          <h2><a href={seriesUrl(s.name)}>{s.name}</a></h2>
+          <ol>{s.works.map((w) => <li><a href={w.url}>{w.title}</a></li>)}</ol>
+          <p class="meta">
+            <span>{ui.works(s.works.length)}</span>
+            {s.latest && <span>{fmtDate(s.latest)}</span>}
+          </p>
+        </section>
+      );
+    })}
+  </div>
+</Base>
