@@ -1,5 +1,5 @@
 ---
 title: "Rhythm Fusion"
-pairing: "Sato Taiki/Yamamoto Sekai"
+cp: "世界树"
 updated: 2023-03-27
 ---

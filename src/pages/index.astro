@@ -26,7 +26,7 @@ const firstChapterUrl = (workSlug: string, chapters: any[]) => {
   <ul class="work-list">
     {withChapters.map(({ work, chapters }) => (
       <li>
-        {work.data.pairing && <span class="work-cp">{work.data.pairing}</span>}
+        {work.data.cp && <span class="work-cp">[{work.data.cp}]</span>}
         <a class="work-title" href={firstChapterUrl(work.slug, chapters)}>{work.data.title}</a>
         <span class="work-meta">
           {work.data.updated && <span>{work.data.updated.toISOString().slice(0, 10)}</span>}
