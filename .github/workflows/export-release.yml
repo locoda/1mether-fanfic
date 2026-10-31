@@ -1,0 +1,54 @@
+# 把网站上的全部作品导出成 Markdown，打包成 zip，发布到 Releases 供下载。
+#
+# 用法：仓库的 Actions 页面 → 左边选「导出作品」→ Run workflow。
+# 默认发布成「草稿」：只有对仓库有写权限的人能看到和下载；
+# 选「公开」的话，任何能看到仓库的人都能下载（公开仓库就是所有人）。
+name: 导出作品
+
+on:
+  workflow_dispatch:
+    inputs:
+      visibility:
+        description: 发布方式
+        type: choice
+        options: [草稿（只有自己能看到）, 公开]
+        default: 草稿（只有自己能看到）
+
+permissions:
+  contents: write
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run export
+
+      - name: 打包
+        run: |
+          stamp=$(date -u +%Y%m%d-%H%M%S)
+          count=$(ls export/*.md | wc -l | tr -d ' ')
+          echo "TAG=works-$stamp" >> "$GITHUB_ENV"
+          echo "COUNT=$count" >> "$GITHUB_ENV"
+          echo "DAY=$(date -u +%Y-%m-%d)" >> "$GITHUB_ENV"
+          (cd export && zip -q -r "../works-$stamp.zip" .)
+
+      - name: 发布到 Releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VISIBILITY: ${{ inputs.visibility }}
+        run: |
+          draft=--draft
+          if [ "$VISIBILITY" = "公开" ]; then draft=; fi
+          gh release create "$TAG" "$TAG.zip" $draft \
+            --target "$GITHUB_SHA" \
+            --title "作品导出 $DAY" \
+            --notes "全部 $COUNT 篇作品的 Markdown 版本（每篇一个 .md：开头是作品信息，「# 章节名」分章）。可以用 npm run import 导回网站。"
