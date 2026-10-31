@@ -19,7 +19,7 @@ const { page, group } = Astro.props as { page: Page<WorkInfo>; group: Group };
     <h1>{group.name}</h1>
     <p class="meta">
       <span>{ui.works(page.total)}</span>
-      {group.latest && <span>{fmtDate(group.latest)}</span>}
+      {site.features.updatedDate && group.latest && <span>{fmtDate(group.latest)}</span>}
       {page.lastPage > 1 && <span>{page.currentPage} / {page.lastPage}</span>}
     </p>
   </div>

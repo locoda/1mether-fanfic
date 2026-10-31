@@ -63,9 +63,10 @@ const related = f.related && work.cps.length
       {showChapterTitle && (
         <p class="chapter-title">{multi && <span class="no">{String(idx + 1).padStart(2, '0')}</span>}{chapter.title}</p>
       )}
-      {f.byline && <p class="byline">{ui.byline(site.author)}</p>}
+      {(f.byline || work.guestAuthor) && <p class="byline">{ui.byline(work.author)}</p>}
       <div class="meta">
-        {work.updated && <time datetime={fmtDate(work.updated)}>{fmtDate(work.updated)}</time>}
+        {f.updatedDate && work.updated && <time datetime={fmtDate(work.updated)}>{fmtDate(work.updated)}</time>}
+        {f.status && work.status && <span>{work.status === 'ongoing' ? ui.ongoing : ui.finished}</span>}
         {multi && !f.chapterPicker && <span>{ui.chapterOf(idx + 1, chapters.length)}</span>}
         {multi && f.chapterPicker && (
           <details class="ch-picker">
@@ -156,7 +157,7 @@ const related = f.related && work.cps.length
             {related.map((w) => (
               <li>
                 <a href={w.url}>{w.title}</a>
-                <span class="m meta">{w.updated && <span>{fmtDate(w.updated)}</span>}{f.wordCount && <span>{ui.words(w.words)}</span>}</span>
+                <span class="m meta">{f.updatedDate && w.updated && <span>{fmtDate(w.updated)}</span>}{f.wordCount && <span>{ui.words(w.words)}</span>}</span>
               </li>
             ))}
           </ul>

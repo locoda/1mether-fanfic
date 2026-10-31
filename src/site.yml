@@ -1,20 +1,25 @@
-title: 1mether 的同人站
-tagline: 同人作品存档
-author: 1mether
-description: 1mether 的同人作品存档。
-lang: zh-CN
-perPage: 20
-readingSpeed: 500
-features:
+info:
+  title: 1mether 的同人站
+  tagline: 同人作品存档
+  author: 1mether
+  description: 1mether 的同人作品存档。
+  lang: zh-CN
+display:
+  darkMode: auto
+  perPage: 20
   leadStory: true
   dropCap: false
   endMark: false
   progressBar: true
-  wordCount: true
-  readingTime: false
-  byline: true
   chapterPicker: true
   keyboardNav: true
-  related: true
+works:
+  customAuthor: false
+  byline: true
+  status: true
+  updatedDate: true
+  wordCount: true
+  readingTime: false
+  readingSpeed: 500
   autoSummary: true
-  darkMode: auto
+  related: true

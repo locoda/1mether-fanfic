@@ -26,7 +26,8 @@ const words = group.works.reduce((n, w) => n + w.words, 0);
         <h3><a href={w.url}>{w.title}</a></h3>
         {w.dek && <p class="dek">{w.dek}</p>}
         <div class="side">
-          {w.updated && <span><time datetime={fmtDate(w.updated)}>{fmtDate(w.updated)}</time></span>}
+          {w.guestAuthor && <span>{w.author}</span>}
+          {site.features.updatedDate && w.updated && <span><time datetime={fmtDate(w.updated)}>{fmtDate(w.updated)}</time></span>}
           {site.features.wordCount && <span>{ui.words(w.words)}</span>}
           {w.chapters.length > 1 && <span>{w.chapters.length} {ui.chapters}</span>}
         </div>
