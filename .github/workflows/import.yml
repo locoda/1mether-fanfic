@@ -52,7 +52,7 @@ jobs:
           echo "changed=true" >> "$GITHUB_OUTPUT"
 
       # 工作流自己推送的提交不会触发其他工作流，所以要手动触发一次 GitHub Pages 部署。
-      # Cloudflare Pages 会自己检测到推送，不需要这一步；没勾 GitHub Pages 时也跳过。
+      # Cloudflare Pages 会自己检测到推送，不需要这一步；关掉了「部署到 GitHub Pages」时也跳过。
       - name: 看网站部署在哪
         id: target
         if: steps.commit.outputs.changed == 'true'

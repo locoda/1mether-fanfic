@@ -3,7 +3,8 @@
 #
 # 网址和子路径会自动算好（https://用户名.github.io/仓库名/，或者你绑定的自定义域名），不用改任何配置。
 #
-# 网站设置（src/site.yml 的 info.deploy）里「部署到」没勾 GitHub Pages 时，这个工作流只做检查、不部署。
+# 网站设置里关掉「部署到 GitHub Pages」（src/site.yml 的 info.githubPages）时，这个工作流只做检查、不部署。
+# 用 Cloudflare Pages 的站关掉它就行，Cloudflare 那边连上仓库后会自己部署。
 name: 部署到 GitHub Pages
 
 on:
