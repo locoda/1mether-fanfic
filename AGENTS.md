@@ -20,7 +20,7 @@
 - Astro 7（content layer + 自定义 loader），Node 22.23.4 以上（`.node-version`）
 - Markdown 用 `@astrojs/markdown-remark` 的 `unified()` 处理器（Astro 7 默认是 Sätteri，但本项目的 rehype 插件依赖 unified）
 - `compressHTML: true`：Astro 7 默认的 `'jsx'` 会删掉行内元素之间的空格，日期 · 字数这类分隔处会变挤
-- 字体自托管：中文思源屏显臻宋（`@chinese-fonts/sypxzs`，按字频切片），西文 Libre Caslon（Fontsource）。不要用 Google Fonts 或外部 CDN，国内读者加载不了
+- 字体自托管：中文字体来自中文网字计划的 npm 包（`@chinese-fonts/*`，按字频切片），默认思源屏显臻宋；西文 Libre Caslon（Fontsource）。不要用 Google Fonts 或外部 CDN，国内读者加载不了
 - 部署：默认 GitHub Pages（`.github/workflows/deploy.yml`）；Cloudflare Pages 是可选项，设仓库变量 `DEPLOY=cloudflare` 时跳过 GitHub Pages 工作流
 - 网页后台：Pages CMS（`.pages.yml`）
 
@@ -35,11 +35,14 @@ src/site.yml                      网站设置和功能开关（Pages CMS 的「
 src/site.config.ts                读取 site.yml 并补默认值；界面文字 ui 也在这里
 src/pages/                        首页分页 [...page]、配对 cp/、系列 series/、章节页 works/[work]/[chapter]
 src/styles/global.css             全部样式，颜色和字体是开头的 CSS 变量
+src/lib/fonts.mjs                 可选的中文字体列表（id → 显示名、font-family、CSS 路径）
 scripts/import.mjs                npm run import：md / txt / docx / AO3 HTML → yml（解析在 scripts/lib/importers.mjs）
 scripts/export-md.mjs             npm run export：yml → export/<作品>.md（export/ 不进 git）
 scripts/lib/work-md.mjs           yml ⇄ md 的转换规则，导入导出共用
+scripts/import-uploads.mjs        后台「批量导入」：imports/ 里的文件 → yml，文件名当作品名
 scripts/release-name.mjs          「导出作品」工作流的 zip 命名：<仓库名>-works-<日期>.zip
 .github/workflows/deploy.yml      部署到 GitHub Pages
+.github/workflows/import.yml      imports/ 有新文件时运行 import-uploads.mjs，提交后触发部署
 .github/workflows/export-release.yml  手动运行，把全部作品打包成 zip 发到 Releases（默认草稿）
 .pages.yml                        Pages CMS 配置
 ```
@@ -47,6 +50,7 @@ scripts/release-name.mjs          「导出作品」工作流的 zip 命名：<�
 ### 网址规则（改动时不能变）
 
 - 作品：`/works/<slug>/`，`slug` 是 yml 文件名经 `github-slugger` 处理（小写、去标点、保留中文）。`/works/<slug>/` 本身是跳转页，跳到第一章
+- 网页后台新建的作品文件名是时间戳（`20261031-203512.yml`，Pages CMS 的 slugify 会删光中文，只能这样），这类文件的 slug 改用作品名生成；重名时按文件名排序依次加 `-2`、`-3`。逻辑在 `works.ts` 的 `assignSlugs()`，普通文件名优先占用 slug
 - 章节：`/works/<slug>/01/`、`/02/`……，按 `chapters` 列表顺序编号，单章作品也是 `/01/`
 - 配对：`/cp/<CP 名 slug>/`，系列：`/series/<系列名 slug>/`
 - 首页分页 `/2/`、`/3/`……，每页篇数是 `site.yml` 的 `display.perPage`
@@ -67,6 +71,18 @@ scripts/release-name.mjs          「导出作品」工作流的 zip 命名：<�
 - Astro 7 用的是 **zod 4**：`.default()` 不会再解析嵌套对象里的默认值。补默认值要用 `z.preprocess(v => v ?? fallback, schema)`（见 `opt()`），否则 `features` 缺省时所有开关都会变成 undefined
 - Pages CMS 保存 `site.yml` 时会**删掉所有注释**，空列表也会被去掉。所以设置说明只能写在 README 和 `.pages.yml` 的 `description` 里，代码必须能处理缺失的项
 - 新增功能开关时，这几处都要改：`site.yml` 对应分组里的默认值、`site.config.ts` 的 schema 和 `GROUPS`、`.pages.yml` 网站设置里对应分组的字段、README 里对应分组的表格。改完检查 `.pages.yml` 每组的字段和 `site.yml` 每组的键完全一致
+
+## 中文字体
+
+- 字体在 `display.font` 里选，id 列表在 `src/lib/fonts.mjs`。`astro.config.mjs` 构建时读 `site.yml`，把 Vite 别名 `site-font` 指向所选字体的 CSS，`Base.astro` 里 `import 'site-font'`，所以每次构建只打包一种字体；`system` 指向空文件 `src/styles/no-font.css`
+- `Base.astro` 输出 `--cn-font` 变量，`global.css` 的 `--serif` / `--display` 用它
+- 加字体：在 `fonts.mjs` 加一项（family 要和字体包 CSS 里的 `font-family` 一致），装对应的 `@chinese-fonts/*` 包，再在 `.pages.yml` 的 `font` 选项和 README 字体表里加上。`site.config.ts` 的枚举从 `FONT_IDS` 生成，不用改
+
+## 批量导入
+
+- 后台的「批量导入」是 Pages CMS 的 media 目录 `imports/`（`rename: false` 保留原文件名）。上传后推送触发 `import.yml`，跑 `scripts/import-uploads.mjs`
+- 作品名和 yml 文件名都是上传的文件名；已有同名作品不覆盖；成功的源文件删掉，失败的留下，原因写进 `imports/_导入失败说明.txt`
+- 工作流用 GITHUB_TOKEN 推送不会触发别的工作流，所以最后用 `gh workflow run deploy.yml` 手动触发部署（`DEPLOY=cloudflare` 时跳过）
 
 ## Pages CMS 的限制（踩过的坑）
 
@@ -127,6 +143,7 @@ git merge template/main        # 第一次同步要加 --allow-unrelated-histori
 
 ## 已知但还没验证的
 
+- 批量导入工作流、Pages CMS 的 media 上传和时间戳文件名，都还没在真实的 GitHub / Pages CMS 上跑过
 - AO3 HTML 导入是按 AO3 下载页结构写的，测试文件是手写的，还没用真实的 AO3 下载文件验证过
 - GitHub Pages 部署和「导出作品」工作流需要在 GitHub 上实际运行才能确认
 - Pages CMS 官方托管版是否收费，文档里没写

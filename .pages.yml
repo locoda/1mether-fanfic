@@ -4,6 +4,16 @@
 #
 # 一篇作品 = src/content/works/ 下的一个 .yml 文件：作品信息 + 所有章节，在同一个页面里编辑。
 
+# 批量导入：在后台左边的「批量导入」里上传 .md / .txt / .docx，GitHub 会自动把它们转成作品
+# （见 .github/workflows/import.yml）。rename: false 保留原文件名，因为作品名就用文件名。
+media:
+  - name: imports
+    label: 批量导入
+    input: imports
+    output: imports
+    extensions: [md, txt, docx]
+    rename: false
+
 content:
   - name: works
     label: 作品
@@ -11,10 +21,11 @@ content:
     path: src/content/works
     subfolders: false
     format: yaml
-    # 新建作品时会按作品名生成文件名，也可以自己改（文件名就是网址，例如 my-work.yml → /works/my-work/）
+    # 新建作品时只填作品名。Pages CMS 生成文件名时会把中文删掉，所以文件名用创建时间，
+    # 网址由网站按作品名生成（见 src/lib/works.ts 的 assignSlugs）
     filename:
-      template: "{primary}.yml"
-      field: create
+      template: "{year}{month}{day}-{hour}{minute}{second}.yml"
+      field: false
     view:
       primary: title
       fields: [title, cp, updated]
@@ -134,6 +145,17 @@ content:
         label: 显示设置
         type: object
         fields:
+          - name: font
+            label: 中文字体
+            type: select
+            options:
+              values:
+                - { name: "sypxzs", label: 思源屏显臻宋（现代宋体，屏幕上清晰） }
+                - { name: "lxgw-neo-zhi-song", label: 霞鹜新致宋（清秀的明朝体） }
+                - { name: "jhlst", label: 京华老宋体（民国老报刊风） }
+                - { name: "zqfs", label: 朱雀仿宋（清瘦文气） }
+                - { name: "lxgwwenkai", label: 霞鹜文楷（楷体） }
+                - { name: "system", label: 系统自带宋体（不下载字体，加载最快） }
           - name: darkMode
             label: 深色模式
             type: select

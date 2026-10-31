@@ -19,7 +19,7 @@ export async function importFile(file) {
   switch (ext) {
     case '.md':
     case '.markdown':
-      return parseWorkMarkdown(await readText(file), file);
+      return parseMd(await readText(file), name, file);
     case '.txt':
       return parseTxt(await readText(file), name, file);
     case '.docx':
@@ -40,6 +40,18 @@ async function readText(file) {
   const utf8 = new TextDecoder('utf-8').decode(buf);
   if (!utf8.includes('�')) return utf8.replace(/^﻿/, '');
   return new TextDecoder('gb18030').decode(buf);
+}
+
+// ---------------------------------------------------------------- Markdown
+
+/** md：开头有 --- 作品信息就照写的来；没有（或没写 title）就用文件名当作品名 */
+function parseMd(text, name, where) {
+  text = text.replace(/\r\n?/g, '\n');
+  if (!/^---\n[\s\S]*?\n---(\n|$)/.test(text)) return parseWorkMarkdown(`---\ntitle: ${JSON.stringify(name)}\n---\n\n${text}`, where);
+  if (!/^---\n[\s\S]*?^title\s*:/m.test(text.split(/\n---(\n|$)/)[0] + '\n')) {
+    text = text.replace(/^---\n/, `---\ntitle: ${JSON.stringify(name)}\n`);
+  }
+  return parseWorkMarkdown(text, where);
 }
 
 // ---------------------------------------------------------------- 纯文本

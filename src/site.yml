@@ -20,6 +20,8 @@ info:
 
 # 显示设置
 display:
+  # 中文字体：sypxzs 思源屏显臻宋 / lxgw-neo-zhi-song 霞鹜新致宋 / jhlst 京华老宋体 / zqfs 朱雀仿宋 / lxgwwenkai 霞鹜文楷 / system 系统自带宋体
+  font: sypxzs
   # 深色模式：auto 跟随系统并显示切换按钮；system 只跟随系统；off 始终浅色
   darkMode: auto
   # 每页显示多少篇作品（首页、配对页）

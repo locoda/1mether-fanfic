@@ -13,8 +13,9 @@
   --rule: #000000;
   --hair: #e0e0e0;
   /* 正文中文优先，这样引号、省略号用中文字形；标题西文优先，用 Caslon */
-  --serif: "Source Han Serif CN for Display", "Songti SC", "STSong", "Libre Caslon Text", serif;
-  --display: "Libre Caslon Display", "Source Han Serif CN for Display", "Songti SC", "STSong", serif;
+  /* --cn-font 是网站设置里选的中文字体，由 src/layouts/Base.astro 写入 */
+  --serif: var(--cn-font, "Source Han Serif CN for Display"), "Songti SC", "STSong", "Libre Caslon Text", serif;
+  --display: "Libre Caslon Display", var(--cn-font, "Source Han Serif CN for Display"), "Songti SC", "STSong", serif;
   --sans: "Helvetica Neue", Helvetica, Arial, "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", sans-serif;
   --measure: 660px;
   --river: 800px;

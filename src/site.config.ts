@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { parse } from 'yaml';
 import { z } from 'astro/zod';
+import { FONT_IDS, DEFAULT_FONT } from './lib/fonts.mjs';
 
 // 网页后台保存时，没填的项目可能写成 "" 或 null，一律当作没写、用默认值
 // （先换成默认值再校验，这样 features 这种嵌套对象里的每一项也会补上默认值）
@@ -36,6 +37,7 @@ const SiteSchema = z.object({
       status: opt(z.boolean(), true),
       updatedDate: opt(z.boolean(), true),
       darkMode: opt(z.enum(['auto', 'system', 'off']), 'auto'),
+      font: opt(z.enum(FONT_IDS as [string, ...string[]]), DEFAULT_FONT),
     }),
     {},
   ),
@@ -48,7 +50,7 @@ const SiteSchema = z.object({
 // 旧版不分组的写法（title、features 直接写在最外层）也照样能读。
 const GROUPS = {
   info: ['title', 'tagline', 'author', 'description', 'lang', 'links'],
-  display: ['darkMode', 'perPage', 'leadStory', 'dropCap', 'endMark', 'progressBar', 'chapterPicker', 'keyboardNav'],
+  display: ['font', 'darkMode', 'perPage', 'leadStory', 'dropCap', 'endMark', 'progressBar', 'chapterPicker', 'keyboardNav'],
   works: ['customAuthor', 'byline', 'status', 'updatedDate', 'wordCount', 'readingTime', 'readingSpeed', 'autoSummary', 'related'],
 } as const;
 const TOP_LEVEL = new Set(['title', 'tagline', 'author', 'description', 'lang', 'links', 'perPage', 'readingSpeed']);
