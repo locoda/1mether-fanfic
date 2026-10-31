@@ -124,6 +124,27 @@ npm run build    # 构建到 dist/
 
 所有站点级设置都在 `src/site.config.ts`：站名、页脚小字、作者、外部链接、每页篇数、阅读速度，以及界面上的全部文字（`ui`，换语言只改这里）。颜色和字体是 `src/styles/global.css` 顶部的变量。
 
+### 功能开关
+
+`site.config.ts` 里的 `features`，`true` 打开、`false` 关闭：
+
+| 开关 | 作用 |
+|---|---|
+| `leadStory` | 首页第一页把最新一篇做成大标题头条 |
+| `dropCap` | 正文第一个字放大（首字下沉） |
+| `endMark` | 完结章最后一段末尾加 ♦ |
+| `progressBar` | 章节页顶部的阅读进度条 |
+| `wordCount` | 显示字数 |
+| `readingTime` | 显示预计阅读时长 |
+| `byline` | 标题下的「文 / 作者」署名 |
+| `chapterPicker` | 多章作品点「第 N 章 / 共 M 章」弹出章节菜单 |
+| `keyboardNav` | 键盘 ← → 翻章 |
+| `related` | 文末「更多同 CP 作品」推荐 |
+| `autoSummary` | 没写简介时，列表里自动显示正文开头 |
+| `darkMode` | `'auto'` 跟随系统并显示切换按钮；`'system'` 只跟随系统；`'off'` 始终浅色 |
+
+没有任何作品写 CP 或系列时，导航里的「配对」「系列」会自动隐藏。
+
 1. 清空 `src/content/works/` 和 `src/content/chapters/`，放进自己的作品。
 2. 改 `src/site.config.ts`。
 3. 部署在子路径（如 GitHub Pages 项目站）时，改 `astro.config.mjs` 里的 `base`。

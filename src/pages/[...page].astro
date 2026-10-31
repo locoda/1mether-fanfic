@@ -12,7 +12,7 @@ export const getStaticPaths = (async ({ paginate }) => {
 }) satisfies GetStaticPaths;
 
 const { page } = Astro.props as { page: Page<WorkInfo> };
-const lead = site.featureLatest && page.currentPage === 1 ? page.data[0] : undefined;
+const lead = site.features.leadStory && page.currentPage === 1 ? page.data[0] : undefined;
 const rest = lead ? page.data.slice(1) : page.data;
 const href = (n: number) => url(n > 1 ? `${n}/` : '');
 ---
@@ -30,11 +30,11 @@ const href = (n: number) => url(n > 1 ? `${n}/` : '');
       )}
       <h2><a href={lead.url}>{lead.title}</a></h2>
       {lead.dek && <p class="dek">{lead.dek}</p>}
-      <p class="byline">{ui.byline(site.author)}</p>
+      {site.features.byline && <p class="byline">{ui.byline(site.author)}</p>}
       <p class="meta">
         {lead.updated && <span>{fmtDate(lead.updated)}</span>}
-        <span>{ui.words(lead.words)}</span>
-        <span>{ui.minutes(lead.minutes)}</span>
+        {site.features.wordCount && <span>{ui.words(lead.words)}</span>}
+        {site.features.readingTime && <span>{ui.minutes(lead.minutes)}</span>}
       </p>
     </article>
   )}

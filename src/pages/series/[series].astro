@@ -14,7 +14,7 @@ const words = group.works.reduce((n, w) => n + w.words, 0);
   <div class="section-head" style="margin-bottom:40px">
     <p class="rubric"><a href={url('series/')}>{ui.seriesIndex}</a></p>
     <h1>{group.name}</h1>
-    <p class="meta"><span>{ui.works(group.works.length)}</span><span>{ui.words(words)}</span></p>
+    <p class="meta"><span>{ui.works(group.works.length)}</span>{site.features.wordCount && <span>{ui.words(words)}</span>}</p>
   </div>
   <ol class="river" style="border-top:1px solid var(--rule)">
     {group.works.map((w, i) => (
@@ -27,7 +27,7 @@ const words = group.works.reduce((n, w) => n + w.words, 0);
         {w.dek && <p class="dek">{w.dek}</p>}
         <div class="side">
           {w.updated && <span><time datetime={fmtDate(w.updated)}>{fmtDate(w.updated)}</time></span>}
-          <span>{ui.words(w.words)}</span>
+          {site.features.wordCount && <span>{ui.words(w.words)}</span>}
           {w.chapters.length > 1 && <span>{w.chapters.length} {ui.chapters}</span>}
         </div>
       </li>

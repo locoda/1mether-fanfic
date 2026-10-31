@@ -14,8 +14,33 @@ export const site = {
   perPage: 20,
   // 阅读速度（字/分钟），用来估算阅读时长
   readingSpeed: 500,
-  // 首页第一页是否把最新一篇做成大标题头条
-  featureLatest: true,
+  // 功能开关：true 打开，false 关闭
+  features: {
+    // 首页第一页把最新一篇做成大标题头条
+    leadStory: true,
+    // 正文第一个字放大（首字下沉）
+    dropCap: true,
+    // 完结章最后一段末尾加 ♦
+    endMark: true,
+    // 章节页顶部的阅读进度条
+    progressBar: true,
+    // 显示字数（列表、系列页、章节页）
+    wordCount: true,
+    // 显示预计阅读时长（章节页、首页头条）
+    readingTime: true,
+    // 标题下的「文 / 作者」署名
+    byline: true,
+    // 多章作品：点「第 N 章 / 共 M 章」弹出章节菜单
+    chapterPicker: true,
+    // 键盘 ← → 翻章
+    keyboardNav: true,
+    // 文末「更多同 CP 作品」推荐
+    related: true,
+    // 没写简介（summary）时，列表里自动显示正文开头
+    autoSummary: true,
+    // 深色模式：'auto' 跟随系统并显示切换按钮；'system' 只跟随系统、不显示按钮；'off' 始终浅色
+    darkMode: 'auto' as 'auto' | 'system' | 'off',
+  },
 };
 
 // 界面文字。做成模板后，换语言只改这里。

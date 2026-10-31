@@ -130,7 +130,7 @@ export function loadWorks(): Promise<WorkInfo[]> {
         words,
         minutes: Math.max(1, Math.round(words / site.readingSpeed)),
         url: chapters[0].url,
-        dek: d.summary ?? excerpt(chapters[0].entry.body ?? ''),
+        dek: d.summary ?? (site.features.autoSummary ? excerpt(chapters[0].entry.body ?? '') : ''),
       };
     });
     return infos.sort((a, b) => (b.updated?.getTime() ?? 0) - (a.updated?.getTime() ?? 0) || a.title.localeCompare(b.title, 'zh'));
