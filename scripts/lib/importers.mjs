@@ -4,13 +4,12 @@
 //   .md          开头 --- 写作品信息，「# 章节名」分章（见 work-md.mjs）
 //   .txt         纯文本；「第一章」「Chapter 1」「# 章节名」这样的行会自动分章；GBK 编码也能读
 //   .docx        Word 文档；「标题 1」样式的段落分章
-//   .html .htm   AO3 下载的 HTML（会读出 CP、系列、简介、作者注）；其他 HTML 按 <h1> 分章
 import { readFile } from 'node:fs/promises';
 import { basename, extname } from 'node:path';
 import { parse as parseHtml, NodeType } from 'node-html-parser';
 import { parseWorkMarkdown } from './work-md.mjs';
 
-export const SUPPORTED = ['.md', '.markdown', '.txt', '.docx', '.html', '.htm'];
+export const SUPPORTED = ['.md', '.markdown', '.txt', '.docx'];
 
 /** 读任意支持的文件，返回 { info, chapters } */
 export async function importFile(file) {
@@ -24,11 +23,6 @@ export async function importFile(file) {
       return parseTxt(await readText(file), name, file);
     case '.docx':
       return parseDocx(file, name);
-    case '.html':
-    case '.htm': {
-      const html = await readText(file);
-      return isAo3(html) ? parseAo3(html, name, file) : parseGenericHtml(html, name, file);
-    }
     default:
       throw new Error(`${file}：不支持 ${ext || '没有扩展名的'} 文件，支持 ${SUPPORTED.join(' ')}`);
   }
@@ -98,12 +92,12 @@ export function parseTxt(text, name, where) {
 async function parseDocx(file, name) {
   const mammoth = (await import('mammoth')).default;
   const { value: html } = await mammoth.convertToHtml({ path: file });
-  return parseGenericHtml(`<body>${html}</body>`, name, file);
+  return parseWordHtml(`<body>${html}</body>`, name, file);
 }
 
-// ---------------------------------------------------------------- 普通 HTML（Word 转出来的也走这里）
+// ---------------------------------------------------------------- Word 转出来的 HTML → 章节
 
-function parseGenericHtml(html, name, where) {
+function parseWordHtml(html, name, where) {
   const root = parseHtml(html, { comment: false });
   const body = root.querySelector('body') ?? root;
   const blocks = body.childNodes.filter((n) => n.nodeType === NodeType.ELEMENT_NODE || n.text.trim());
@@ -127,98 +121,6 @@ function parseGenericHtml(html, name, where) {
   }
   if (current.nodes.length || current.title !== undefined) chapters.push(current);
   return finish({ title }, chapters.map((c) => ({ title: c.title, body: nodesToMarkdown(c.nodes) })), where);
-}
-
-// ---------------------------------------------------------------- AO3
-
-const isAo3 = (html) => /archiveofourown\.org/i.test(html) && /id="(preface|chapters)"/i.test(html);
-
-// AO3 自动加的提示文字，导入时去掉
-const AO3_BOILERPLATE = /^\(?\s*See the end of the (work|chapter) for (more )?notes\.?\s*\)?$/i;
-
-function parseAo3(html, name, where) {
-  const root = parseHtml(html, { comment: false });
-  const preface = root.querySelector('#preface') ?? root;
-  const info = { title: (preface.querySelector('h1')?.text ?? name).trim() || name };
-
-  // 标签区：<dt>Relationship:</dt><dd>…</dd>
-  const tags = {};
-  for (const dt of preface.querySelectorAll('dl.tags dt, dl dt')) {
-    const dd = dt.nextElementSibling;
-    if (dd?.tagName === 'DD') tags[dt.text.trim().replace(/[:：]$/, '').toLowerCase()] = dd;
-  }
-  const rel = tags.relationship ?? tags.relationships;
-  if (rel) {
-    const cps = rel.querySelectorAll('a').map((a) => a.text.trim()).filter(Boolean);
-    if (cps.length) info.cp = cps;
-  }
-  const seriesText = tags.series?.text.replace(/\s+/g, ' ').trim();
-  const sm = seriesText?.match(/Part\s+(\d+)\s+of\s+(.+)$/i);
-  if (sm) {
-    info.series = sm[2].trim();
-    info.seriesOrder = Number(sm[1]);
-  }
-  const stats = tags.stats?.text.replace(/\s+/g, ' ') ?? '';
-  const date = (k) => stats.match(new RegExp(`${k}:\\s*(\\d{4}-\\d{2}-\\d{2})`, 'i'))?.[1];
-  const updated = date('Completed') ?? date('Updated') ?? date('Published');
-  if (updated) info.updated = updated;
-  const ch = stats.match(/Chapters:\s*(\d+)\/(\d+|\?)/i);
-  if (ch) info.status = ch[2] !== '?' && ch[1] === ch[2] ? 'finished' : 'ongoing';
-
-  // 简介和作品前注：<p>Summary</p><blockquote>…</blockquote>
-  const labelled = (scope, label) => {
-    for (const p of scope?.querySelectorAll('p') ?? []) {
-      if (p.text.trim().toLowerCase() === label.toLowerCase()) {
-        const next = p.nextElementSibling;
-        if (next?.tagName === 'BLOCKQUOTE') return next;
-      }
-    }
-    return undefined;
-  };
-  const summary = labelled(preface, 'Summary');
-  if (summary) {
-    const text = summary.text.replace(/\s+/g, ' ').trim();
-    if (text) info.summary = text;
-  }
-  const workNotes = noteBlock(labelled(preface, 'Notes'), '作者注');
-  const workEndNotes = noteBlock(labelled(root.querySelector('#afterword') ?? root.querySelector('#endnotes'), 'End Notes') ?? root.querySelector('#endnotes blockquote'), '章末注');
-
-  // 章节
-  const container = root.querySelector('#chapters') ?? root;
-  const headings = container.querySelectorAll('h2.heading');
-  let chapters;
-  if (headings.length) {
-    chapters = headings.map((h, i) => {
-      const group = h.closest('.meta') ?? h.parentNode;
-      // 正文是 meta 后面第一个 .userstuff
-      let el = group.nextElementSibling;
-      while (el && !el.classList?.contains('userstuff')) el = el.nextElementSibling;
-      const startNote = noteBlock(labelled(group, 'Chapter Notes'), '作者注');
-      let endEl = el?.nextElementSibling;
-      while (endEl && !/endnote/i.test(`${endEl.id} ${endEl.getAttribute('class') ?? ''}`) && !endEl.querySelector('h2.heading')) endEl = endEl.nextElementSibling;
-      const endNote = endEl && /endnote/i.test(`${endEl.id} ${endEl.getAttribute('class') ?? ''}`) ? noteBlock(endEl.querySelector('blockquote'), '章末注') : '';
-      const raw = h.text.replace(/\s+/g, ' ').trim();
-      const title = raw.replace(/^Chapter\s+\d+\s*[:：]?\s*/i, '').trim() || (headings.length > 1 ? undefined : info.title);
-      return { title, body: [startNote, el ? nodesToMarkdown(el.childNodes) : '', endNote].filter(Boolean).join('\n\n') };
-    });
-  } else {
-    const content = container.querySelector('.userstuff') ?? container;
-    chapters = [{ title: info.title, body: nodesToMarkdown(content.childNodes) }];
-  }
-  if (workNotes) chapters[0].body = `${workNotes}\n\n${chapters[0].body}`;
-  if (workEndNotes) chapters[chapters.length - 1].body += `\n\n${workEndNotes}`;
-  return finish(info, chapters, where);
-}
-
-/** <blockquote> 里的作者注 → <aside class="author-note"> 区块，一段一行 */
-function noteBlock(el, label) {
-  if (!el) return '';
-  const md = nodesToMarkdown(el.childNodes)
-    .split(/\n{2,}/)
-    .filter((p) => !AO3_BOILERPLATE.test(p.replace(/[*_[\]()]/g, '').trim()))
-    .join('\n\n')
-    .trim();
-  return md ? `<aside class="author-note" aria-label="${label}">\n\n${md}\n\n</aside>` : '';
 }
 
 // ---------------------------------------------------------------- HTML → Markdown
@@ -286,7 +188,6 @@ function nodesToMarkdown(nodes) {
   // 段落开头的全角空格缩进去掉；Markdown 里一行开头的 # 会被当成标题，转义掉
   return out
     .map((p) => p.replace(/^[　 ]+/gm, '').replace(/^#(?!#)/gm, '\\#'))
-    .filter((p) => !AO3_BOILERPLATE.test(p))
     .join('\n\n');
 }
 

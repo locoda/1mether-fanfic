@@ -36,7 +36,7 @@ src/site.config.ts                读取 site.yml 并补默认值；界面文字
 src/pages/                        首页分页 [...page]、配对 cp/、系列 series/、章节页 works/[work]/[chapter]
 src/styles/global.css             全部样式，颜色和字体是开头的 CSS 变量
 src/lib/fonts.mjs                 可选的中文字体列表（id → 显示名、font-family、CSS 路径）
-scripts/import.mjs                npm run import：md / txt / docx / AO3 HTML → yml（解析在 scripts/lib/importers.mjs）
+scripts/import.mjs                npm run import：md / txt / docx → yml（解析在 scripts/lib/importers.mjs）
 scripts/export-md.mjs             npm run export：yml → export/<作品>.md（export/ 不进 git）
 scripts/lib/work-md.mjs           yml ⇄ md 的转换规则，导入导出共用
 scripts/import-uploads.mjs        后台「批量导入」：imports/ 里的文件 → yml，文件名当作品名
@@ -147,6 +147,5 @@ git merge template/main        # 第一次同步要加 --allow-unrelated-histori
 ## 已知但还没验证的
 
 - 批量导入、改名工作流，Pages CMS 的 media 上传和时间戳文件名，都还没在真实的 GitHub / Pages CMS 上跑过
-- AO3 HTML 导入是按 AO3 下载页结构写的，测试文件是手写的，还没用真实的 AO3 下载文件验证过
 - GitHub Pages 部署和「导出作品」工作流需要在 GitHub 上实际运行才能确认
 - Pages CMS 官方托管版是否收费，文档里没写
