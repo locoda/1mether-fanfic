@@ -4,7 +4,8 @@
     "@fontsource/libre-caslon-display": "^5.3.0",
     "@fontsource/libre-caslon-text": "^5.3.0",
     "astro": "^5.18.2",
-    "github-slugger": "^2.0.0"
+    "github-slugger": "^2.0.0",
+    "yaml": "^2.9.1"
   },
   "name": "fanfic-site-template",
   "private": true,

@@ -2,26 +2,20 @@
 # 用 GitHub 账号登录 https://app.pagescms.org ，选这个仓库，就能在网页上写作品。
 # 保存后会自动提交到仓库，Cloudflare Pages 随后自动重新部署。
 #
-# 一篇作品 = src/content/works/ 下的一个文件夹：
-#   index.yml   作品信息（后台「作品」里编辑）
-#   01.md ……    章节（后台「章节」里编辑），单章作品也有一个章节
+# 一篇作品 = src/content/works/ 下的一个 .yml 文件：作品信息 + 所有章节，在同一个页面里编辑。
 
 content:
-  # ---------- 作品：只有作品信息，没有正文 ----------
   - name: works
     label: 作品
     type: collection
     path: src/content/works
-    subfolders: true
-    # 新建作品时，文件名会按标题生成「标题/index.yml」，也可以自己改，例如「my-work/index.yml」
+    subfolders: false
+    format: yaml
+    # 新建作品时会按作品名生成文件名，也可以自己改（文件名就是网址，例如 my-work.yml → /works/my-work/）
     filename:
-      template: "{primary}/index.yml"
+      template: "{primary}.yml"
       field: create
     view:
-      layout: tree
-      node:
-        filename: index.yml
-        hideDirs: nodes
       primary: title
       fields: [title, cp, updated]
       sort: [updated, title]
@@ -52,7 +46,7 @@ content:
       - name: summary
         label: 简介
         type: text
-        description: 不填就自动取正文开头
+        description: 不填就自动取第一章开头
 
       - name: series
         label: 系列
@@ -72,35 +66,23 @@ content:
             - { name: finished, label: 已完结 }
         description: 不填就不显示
 
-  # ---------- 章节：只有章节名、第几章和正文 ----------
-  - name: chapters
-    label: 章节
-    type: collection
-    path: src/content/works
-    subfolders: true
-    # 先点进作品的文件夹，再新建章节；文件名随意，顺序和网址只看「第几章」
-    filename:
-      template: "{order}.md"
-      field: create
-    view:
-      primary: title
-      fields: [title, order]
-      sort: [order, title]
-      default:
-        sort: order
-        order: asc
-    fields:
-      - name: title
-        label: 章节名
-        type: string
-        description: 单章作品填作品名就行
+      - name: chapters
+        label: 章节
+        type: object
+        description: 点「添加」多一章，拖动调整顺序；单章作品只留一章就行
+        list:
+          min: 1
+          collapsible:
+            collapsed: true
+            summary: "{index}. {title}"
+        fields:
+          - name: title
+            label: 章节名
+            type: string
+            description: 单章作品可以不填
 
-      - name: order
-        label: 第几章
-        type: number
-        description: 1、2、3……决定章节顺序和网址；单章作品填 1
-
-      - name: body
-        label: 正文
-        type: text
-        description: 空一行是分段；作者注写在 <aside class="author-note" aria-label="作者注"> 和 </aside> 之间
+          - name: body
+            label: 正文
+            type: text
+            required: true
+            description: 空一行是分段；作者注写在 <aside class="author-note" aria-label="作者注"> 和 </aside> 之间

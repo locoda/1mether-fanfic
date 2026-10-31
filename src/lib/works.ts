@@ -4,7 +4,7 @@ import { site } from '../site.config';
 
 type Entry = CollectionEntry<'chapters'>;
 
-// 作品文件夹名 → 网址（和之前的规则一致：小写、去掉标点，中文保留）
+// 作品文件名 → 网址（和之前的规则一致：小写、去掉标点，中文保留）
 const folderSlug = (folder: string) => new GithubSlugger().slug(folder);
 
 export interface Chapter {
@@ -91,47 +91,28 @@ let cache: Promise<WorkInfo[]> | undefined;
 export function loadWorks(): Promise<WorkInfo[]> {
   cache ??= (async () => {
     const [infoEntries, chapterEntries] = await Promise.all([getCollection('works'), getCollection('chapters')]);
-    // 按文件夹分组：<作品文件夹>/index.yml 是作品信息，<作品文件夹>/*.md 是章节
-    const byFolder = new Map<string, Entry[]>();
+    // 章节 id 形如 "性别问题/02"：前半是作品文件名，后半是第几章
+    const byWork = new Map<string, Entry[]>();
     for (const e of chapterEntries) {
-      const folder = e.id.split('/')[0];
-      if (!byFolder.has(folder)) byFolder.set(folder, []);
-      byFolder.get(folder)!.push(e);
-    }
-    const infoFolders = new Set(infoEntries.map((e) => e.id.split('/')[0]));
-    for (const folder of byFolder.keys()) {
-      if (!infoFolders.has(folder)) throw new Error(`作品文件夹 src/content/works/${folder}/ 里缺少 index.yml（写标题、CP 等作品信息）`);
+      const work = e.id.split('/')[0];
+      if (!byWork.has(work)) byWork.set(work, []);
+      byWork.get(work)!.push(e);
     }
 
     const infos = infoEntries.map((info): WorkInfo => {
-      const folder = info.id.split('/')[0];
-      const where = `src/content/works/${folder}/`;
       const d = info.data;
       const title = d.title;
-      const raw = byFolder.get(folder) ?? [];
-      if (raw.length === 0) throw new Error(`作品「${title}」没有章节：请在 ${where} 下放至少一个章节文件，例如 01.md`);
-      const slug = folderSlug(folder);
-      const file = (e: Entry) => `${e.id.split('/')[1]}.md`;
-      // 章节顺序只看 order，文件名随意。单章作品可以不写 order。
-      if (raw.length > 1) {
-        const missing = raw.filter((e) => e.data.order === undefined).map(file);
-        if (missing.length) throw new Error(`「${title}」有多个章节，每章都要写 order（第几章）：${where}${missing.join('、')}`);
-        const seen = new Map<number, string>();
-        for (const e of raw) {
-          if (seen.has(e.data.order!)) throw new Error(`「${title}」里 ${seen.get(e.data.order!)} 和 ${file(e)} 的 order 都是 ${e.data.order}`);
-          seen.set(e.data.order!, file(e));
-        }
-      }
-      const sorted = [...raw].sort((a, b) => (a.data.order ?? 1) - (b.data.order ?? 1));
-      const chapters: Chapter[] = sorted.map((e) => {
-        const order = e.data.order ?? 1;
+      const slug = folderSlug(info.id);
+      const raw = (byWork.get(info.id) ?? []).sort((a, b) => a.data.order - b.data.order);
+      const chapters: Chapter[] = raw.map((e) => {
+        const order = e.data.order;
         const key = String(order).padStart(2, '0');
         return {
           entry: e,
           slug: `${slug}/${key}`,
           order,
           key,
-          title: e.data.title ?? (sorted.length === 1 ? title : `第 ${order} 章`),
+          title: e.data.title ?? (raw.length === 1 ? title : `第 ${order} 章`),
           url: url(`works/${slug}/${key}/`),
         };
       });
