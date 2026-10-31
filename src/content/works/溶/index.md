@@ -1,6 +1,6 @@
 ---
 title: "溶"
-cp: "世界树"
+cp: ["世界树"]
 updated: 2025-02-14
 series: "在平凡日常中流淌着的……"
 seriesOrder: 11

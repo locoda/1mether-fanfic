@@ -1,0 +1,83 @@
+# Pages CMS 配置：https://pagescms.org
+# 用 GitHub 账号登录 https://app.pagescms.org ，选这个仓库，就能在网页上写作品。
+# 保存后会自动提交到仓库，Cloudflare Pages 随后自动重新部署。
+#
+# 一篇作品 = src/content/works/ 下的一个文件夹：
+#   index.md      作品信息（标题、CP、日期……）
+#   01.md、02.md  章节；多章作品每章要填「第几章」
+
+content:
+  - name: works
+    label: 作品
+    type: collection
+    path: src/content/works
+    subfolders: true
+    format: yaml-frontmatter
+    # 新建文件时可以自己填文件名：新作品填「作品名/index.md」，新章节填「作品名/02.md」
+    filename:
+      template: "{primary}/index.md"
+      field: create
+    view:
+      layout: tree
+      node:
+        filename: index.md
+        hideDirs: nodes
+      primary: title
+      fields: [title, order, updated]
+      sort: [updated, title, order]
+      search: [title, cp, series]
+      default:
+        sort: updated
+        order: desc
+    fields:
+      - name: title
+        label: 标题
+        type: string
+        description: 作品信息（index.md）里填作品名；多章作品的章节里填章节名；单章作品的正文文件可以不填
+
+      - name: order
+        label: 第几章
+        type: number
+        description: 只在章节文件里填。多章作品每章必填（1、2、3……），决定章节顺序和网址；单章作品不用填
+
+      - name: cp
+        label: CP
+        type: string
+        list: true
+        description: 只在作品信息里填。可以填多个
+
+      - name: updated
+        label: 更新日期
+        type: date
+        default: ""
+        options:
+          format: yyyy-MM-dd
+        description: 只在作品信息里填。决定首页排序
+
+      - name: series
+        label: 系列
+        type: string
+        description: 只在作品信息里填。系列名完全相同的作品会自动归在一起
+
+      - name: seriesOrder
+        label: 系列里的第几篇
+        type: number
+
+      - name: summary
+        label: 简介
+        type: text
+        description: 只在作品信息里填。不填就自动取正文开头
+
+      - name: status
+        label: 连载状态
+        type: select
+        options:
+          values:
+            - { name: ongoing, label: 连载中 }
+            - { name: finished, label: 已完结 }
+        description: 只在作品信息里填。不填就不显示
+
+      - name: body
+        label: 正文
+        type: text
+        description: 章节文件里写正文（作品信息 index.md 不用写）。空一行是分段；作者注写在 <aside class="author-note" aria-label="作者注"> 和 </aside> 之间
