@@ -1,44 +1,33 @@
 ---
-import Base from '../../layouts/Base.astro';
 import { getCollection } from 'astro:content';
 import { chaptersOf } from '../../lib/works';
 
+// 作品页不单独成页：直接跳到第一章。
 export async function getStaticPaths() {
   const works = await getCollection('works');
-  return works.map((w) => ({ params: { work: w.slug }, props: { work: w } }));
+  return await Promise.all(works.map(async (w) => {
+    const chapters = await chaptersOf(w.slug);
+    const first = chapters[0];
+    const part = first ? first.slug.split('/').slice(1).join('/') : '';
+    return {
+      params: { work: w.slug },
+      props: { title: w.data.title, target: `${import.meta.env.BASE_URL}works/${w.slug}/${part}/` },
+    };
+  }));
 }
 
-const { work } = Astro.props;
-const chapters = await chaptersOf(work.slug);
-const { Content } = await work.render();
+const { title, target } = Astro.props;
 ---
-<Base title={work.data.title} description={work.data.summary}>
-  <h1>{work.data.title}</h1>
-  <p class="meta">
-    {work.data.pairing && <span>{work.data.pairing} · </span>}
-    {work.data.fandom && <span>{work.data.fandom} · </span>}
-    {work.data.status} · {chapters.length} 章
-    {work.data.rating && <span> · 分级：{work.data.rating}</span>}
-    {work.data.series && <span> · 系列：{work.data.series}</span>}
-  </p>
-  {work.data.warnings.length > 0 && (
-    <div class="warnings"><strong>预警：</strong>{work.data.warnings.join('、')}</div>
-  )}
-  <p>{work.data.summary}</p>
-  <p>{work.data.tags.map((t) => <span class="tag"><a href={`${import.meta.env.BASE_URL}tags/${encodeURIComponent(t)}/`}>{t}</a></span>)}</p>
-  <Content />
-  <h2>章节</h2>
-  {chapters.length === 0 && <p>还没有章节。</p>}
-  <ol class="chapter-list">
-    {chapters.map((c) => {
-      const chapterPart = c.slug.split('/').slice(1).join('/');
-      return (
-        <li>
-          <span class="order">第 {c.data.order} 章</span>
-          <a href={`${import.meta.env.BASE_URL}works/${work.slug}/${chapterPart}/`}>{c.data.title}</a>
-          {c.data.summary && <span class="meta"> — {c.data.summary}</span>}
-        </li>
-      );
-    })}
-  </ol>
-</Base>
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="refresh" content={`0; url=${target}`} />
+  <link rel="canonical" href={target} />
+  <title>{title}</title>
+</head>
+<body>
+  <p><a href={target}>正在前往《{title}》第一章…</a></p>
+</body>
+</html>

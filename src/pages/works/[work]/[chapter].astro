@@ -21,17 +21,29 @@ const prev = idx > 0 ? chapters[idx - 1] : null;
 const next = idx < chapters.length - 1 ? chapters[idx + 1] : null;
 const { Content } = await chapter.render();
 const chapterUrl = (c: typeof chapter) => `${import.meta.env.BASE_URL}works/${work.slug}/${c.slug.split('/').slice(1).join('/')}/`;
+const homeUrl = import.meta.env.BASE_URL;
 ---
-<Base title={`${chapter.data.title} · ${work.data.title}`} description={chapter.data.summary ?? work.data.summary}>
-  <p class="meta"><a href={`${import.meta.env.BASE_URL}works/${work.slug}/`}>← {work.data.title}</a> · 第 {chapter.data.order} 章 / 共 {chapters.length} 章</p>
-  <h1>{chapter.data.title}</h1>
-  {work.data.warnings.length > 0 && (
-    <div class="warnings"><strong>预警：</strong>{work.data.warnings.join('、')}</div>
-  )}
-  <Content />
-  <nav class="chapter-nav">
-    <span>{prev && <a href={chapterUrl(prev)}>← 上一章：{prev.data.title}</a>}</span>
-    <span><a href={`${import.meta.env.BASE_URL}works/${work.slug}/`}>章节目录</a></span>
-    <span class="next">{next && <a href={chapterUrl(next)}>下一章：{next.data.title} →</a>}</span>
+<Base title={`${chapter.data.title} · ${work.data.title}`}>
+  <p class="eyebrow"><a href={homeUrl}>全部作品</a> / {work.data.pairing && <span>{work.data.pairing} · </span>}{work.data.title}</p>
+  <h1 class="chapter-title">{chapter.data.title}</h1>
+  {chapters.length > 1 && <p class="chapter-count">第 {chapter.data.order} 章 / 共 {chapters.length} 章</p>}
+  <div class="chapter-body"><Content /></div>
+  <nav class="chapter-nav" aria-label="章节导航">
+    <span>{prev && <a class="nav-btn" href={chapterUrl(prev)}>← 上一章：{prev.data.title}</a>}</span>
+    <span>{next && <a class="nav-btn next-btn" href={chapterUrl(next)}>下一章：{next.data.title} →</a>}</span>
   </nav>
+  {chapters.length > 1 && (
+    <details class="chapter-list-box">
+      <summary>全部章节</summary>
+      <ol class="chapter-list">
+        {chapters.map((c) => (
+          <li class={c.slug === chapter.slug ? 'current' : ''}>
+            {c.slug === chapter.slug
+              ? <span>{c.data.title}</span>
+              : <a href={chapterUrl(c)}>{c.data.title}</a>}
+          </li>
+        ))}
+      </ol>
+    </details>
+  )}
 </Base>
