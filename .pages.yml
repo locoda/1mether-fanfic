@@ -211,3 +211,4 @@ content:
           - { name: readingSpeed, label: 阅读速度（字/分钟）, type: number, description: 用来估算阅读时长 }
           - { name: autoSummary, label: 没写简介时自动取正文开头, type: boolean }
           - { name: related, label: 文末同 CP 推荐, type: boolean }
+          - { name: allowCopy, label: 允许复制正文, type: boolean, description: 关掉后读者选不中文字、不能复制和右键。挡得住随手复制，挡不住看网页源代码或截图 }
