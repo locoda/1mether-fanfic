@@ -61,3 +61,5 @@ works:
   autoSummary: true
   # 文末「更多同 CP 作品」推荐
   related: true
+  # 允许读者选中、复制正文；关掉后选不中、不能复制和右键（挡不住看源代码和截图）
+  allowCopy: true
