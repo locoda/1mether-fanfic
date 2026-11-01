@@ -4,6 +4,7 @@ cp:
 updated: 2026-02-28
 series: 度量空间
 seriesOrder: 4
+status: finished
 chapters:
 - title: 交换律
   body: |
