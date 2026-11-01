@@ -218,4 +218,12 @@ export async function loadSeries(): Promise<Group[]> {
   return groups.sort((a, b) => (b.latest?.getTime() ?? 0) - (a.latest?.getTime() ?? 0));
 }
 
+/** 网站设置里指定的头条作品（leadMode 为 pick 时按作品名找）；没指定或找不到返回 undefined，首页就用最新一篇 */
+export function pinnedLead(works: WorkInfo[]) {
+  const f = site.features;
+  const name = f.leadWork.trim();
+  if (!f.leadStory || f.leadMode !== 'pick' || !name) return undefined;
+  return works.find((w) => w.title.trim() === name);
+}
+
 export const fmtDate = (d?: Date) => (d ? d.toISOString().slice(0, 10) : '');

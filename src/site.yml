@@ -10,6 +10,8 @@ display:
   darkMode: auto
   perPage: 10
   leadStory: false
+  leadMode: latest
+  leadWork: ""
   dropCap: false
   endMark: true
   progressBar: true
