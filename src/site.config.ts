@@ -34,6 +34,7 @@ const SiteSchema = z.object({
       chapterPicker: opt(z.boolean(), true),
       keyboardNav: opt(z.boolean(), true),
       related: opt(z.boolean(), true),
+      allowCopy: opt(z.boolean(), true),
       autoSummary: opt(z.boolean(), true),
       customAuthor: opt(z.boolean(), false),
       status: opt(z.boolean(), true),
@@ -53,7 +54,7 @@ const SiteSchema = z.object({
 const GROUPS = {
   info: ['title', 'tagline', 'author', 'description', 'lang', 'links', 'githubPages'],
   display: ['font', 'darkMode', 'perPage', 'leadStory', 'dropCap', 'endMark', 'progressBar', 'chapterPicker', 'keyboardNav'],
-  works: ['customAuthor', 'byline', 'status', 'updatedDate', 'wordCount', 'readingTime', 'readingSpeed', 'autoSummary', 'related'],
+  works: ['customAuthor', 'byline', 'status', 'updatedDate', 'wordCount', 'readingTime', 'readingSpeed', 'autoSummary', 'related', 'allowCopy'],
 } as const;
 const TOP_LEVEL = new Set(['title', 'tagline', 'author', 'description', 'lang', 'links', 'githubPages', 'perPage', 'readingSpeed']);
 

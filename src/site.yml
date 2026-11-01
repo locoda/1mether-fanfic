@@ -25,3 +25,4 @@ works:
   readingSpeed: 500
   autoSummary: true
   related: true
+  allowCopy: true
