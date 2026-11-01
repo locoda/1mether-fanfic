@@ -7,7 +7,7 @@
 ```
 npm install
 npm run dev      # http://localhost:4321
-npm run build    # 生成到 dist/，模板自带 4 篇作品，是 22 页
+npm run build    # 生成到 dist/，模板自带 4 篇作品，是 28 页
 npm run check    # 自动检查，开 PR 时 GitHub 也会跑同一套
 ```
 
@@ -72,7 +72,7 @@ npm run check    # 自动检查，开 PR 时 GitHub 也会跑同一套
 
 ### 按改动范围补做
 
-1. **写下 `npm run build` 的页数**（模板自带 4 篇作品，是 22 页），和改动前对比
+1. **写下 `npm run build` 的页数**（模板自带 4 篇作品，是 28 页），和改动前对比
 2. **改了导入导出或 `work-md.mjs`**：所有作品做 yml → md → yml 往返，结果必须和原文件完全一致：
    ```
    cp -r src/content/works /tmp/orig && npm run export && npm run import -- export/*.md --force && diff -r /tmp/orig src/content/works
