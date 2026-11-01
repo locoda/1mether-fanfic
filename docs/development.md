@@ -7,7 +7,7 @@
 ```
 npm install
 npm run dev      # http://localhost:4321
-npm run build    # 生成到 dist/，模板 3 篇示例作品是 15 页
+npm run build    # 生成到 dist/，模板自带 4 篇作品，是 22 页
 npm run check    # 自动检查，开 PR 时 GitHub 也会跑同一套
 ```
 
@@ -72,7 +72,7 @@ npm run check    # 自动检查，开 PR 时 GitHub 也会跑同一套
 
 ### 按改动范围补做
 
-1. **写下 `npm run build` 的页数**（模板 3 篇示例作品是 15 页），和改动前对比
+1. **写下 `npm run build` 的页数**（模板自带 4 篇作品，是 22 页），和改动前对比
 2. **改了导入导出或 `work-md.mjs`**：所有作品做 yml → md → yml 往返，结果必须和原文件完全一致：
    ```
    cp -r src/content/works /tmp/orig && npm run export && npm run import -- export/*.md --force && diff -r /tmp/orig src/content/works
@@ -117,3 +117,7 @@ const { chromium } = require('playwright');
 - 不要用 Google Fonts 或任何国内访问不了的外部资源
 - 不要在作品列表或后台里加重复、啰嗦的提示文字
 - 不要做 AO3 HTML 导入（做过，被删掉了）
+
+## README 和《使用说明》
+
+`src/content/works/example-guide.yml` 是 README 教程的精简版，放在演示站上给人直接读。改了 README 里的建站、后台、写作品、批量导入、备份步骤，要同步改这篇。
