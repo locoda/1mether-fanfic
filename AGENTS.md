@@ -83,7 +83,7 @@ scripts/release-name.mjs          「导出作品」工作流的 zip 命名：<�
 
 ## 批量导入
 
-- 后台的「批量导入」是 Pages CMS 的 media 目录 `imports/`（`rename: false` 保留原文件名）。Pages CMS media 页面的 Upload 按钮没开 `multiple`，一次只能选一个文件；拖放区（DropZone）不限数量，可以一次拖多个。另外支持 `.zip`（jszip 解开，文件名先按 UTF-8 解码、失败再按 GB18030，兼容 Windows 自带压缩）
+- 后台的「批量导入」是 Pages CMS 的 media 目录 `imports/`（`rename: false` 保留原文件名）。Pages CMS 一次只能上传一个文件（Upload 按钮和拖放都是，用户实测；源码里 DropZone 看似支持多个，但实际不行），所以支持 `.zip`（jszip 解开，文件名先按 UTF-8 解码、失败再按 GB18030，兼容 Windows 自带压缩）
 - 上传本身不触发导入。media 上配了 Pages CMS 的 action「开始导入」，点击时弹框填配对、系列、状态、更新日期、作者，以 `workflow_dispatch` 的 `inputs.payload`（JSON，填的值在 `.inputs` 里）触发 `import.yml`，脚本从环境变量 `PAGES_CMS_PAYLOAD` 读。这些值只补文件里没写的项目；更新日期没写就不加（Pages CMS 新建作品时日期字段默认当天，`.pages.yml` 里不要再写 `default: ""`）；填了系列的按文件名顺序接在该系列现有最大 `seriesOrder` 后面
 - Pages CMS action 的 select 选项用 `label` / `value`（和字段的 `options.values` 写法不同），「不填」用 `none` 而不是空字符串
 - 作品名和 yml 文件名都是上传的文件名；已有同名作品不覆盖；成功的源文件删掉，失败的留下，原因写进 `imports/_导入失败说明.txt`
