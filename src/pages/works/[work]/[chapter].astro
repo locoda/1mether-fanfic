@@ -50,7 +50,7 @@ const related = f.related && work.cps.length
 ---
 <Base title={multi ? `${chapter.title} · ${work.title}` : work.title} description={work.dek}>
   {f.progressBar && <div class="progress" aria-hidden="true"><span></span></div>}
-  <article>
+  <article class:list={[{ 'no-copy': !f.allowCopy }]}>
     <header class="article-head">
       {(work.cps.length > 0 || work.series) && (
         <p class="rubric">
@@ -167,7 +167,7 @@ const related = f.related && work.cps.length
     </div>
   </div>
 
-  <script is:inline define:vars={{ prevHref: prevLink?.href ?? null, nextHref: nextLink?.href ?? null, keyboardNav: f.keyboardNav }}>
+  <script is:inline define:vars={{ prevHref: prevLink?.href ?? null, nextHref: nextLink?.href ?? null, keyboardNav: f.keyboardNav, allowCopy: f.allowCopy }}>
     // 阅读进度条（features.progressBar）
     const bar = document.querySelector('.progress span');
     const body = document.querySelector('.chapter-body');
@@ -190,6 +190,13 @@ const related = f.related && work.cps.length
       });
       document.addEventListener('click', (e) => { if (picker.open && !picker.contains(e.target)) picker.open = false; });
       addEventListener('keydown', (e) => { if (e.key === 'Escape' && picker.open) { picker.open = false; picker.querySelector('summary').focus(); } });
+    }
+    // 不允许复制（features.allowCopy 关掉时）：拦住复制、剪切、右键、拖拽和选中文字
+    if (!allowCopy) {
+      const article = document.querySelector('article.no-copy');
+      for (const type of ['copy', 'cut', 'contextmenu', 'dragstart', 'selectstart']) {
+        article?.addEventListener(type, (e) => e.preventDefault());
+      }
     }
     // 键盘 ← → 翻章（features.keyboardNav）
     if (keyboardNav) {
