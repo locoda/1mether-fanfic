@@ -22,7 +22,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "import": "node scripts/import.mjs",
-    "export": "node scripts/export-md.mjs"
+    "export": "node scripts/export-md.mjs",
+    "check": "node scripts/check.mjs"
   },
   "type": "module",
   "version": "0.1.0"

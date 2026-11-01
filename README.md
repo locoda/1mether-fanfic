@@ -196,13 +196,18 @@ GitHub 用来存放你的网站和作品，网站也直接放在 GitHub Pages �
 
 下面这些需要在电脑上装 [Node.js](https://nodejs.org)（22.23.4 以上，版本写在 `.node-version`）和 git。
 
+想改代码、加功能的话，先看 [docs/](docs/)：[技术要点](docs/architecture.md)、[部署和工作流](docs/deployment.md)、[二次开发指南](docs/development.md)。
+
 ### 在电脑上预览
 
 ```
 npm install
 npm run dev      # 打开 http://localhost:4321 预览
 npm run build    # 生成网站到 dist/
+npm run check    # 检查改动有没有弄坏东西
 ```
+
+在 GitHub 上开 PR 时会自动跑同一套检查，结果显示在 PR 页面下方：绿勾是通过，红叉点 **Details** 能看到哪里出了问题。用 Cloudflare Pages 的话，每个分支还会有一个预览网址，合并前就能看到效果。
 
 ### 作品文件的格式
 
