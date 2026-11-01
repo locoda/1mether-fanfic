@@ -1,13 +1,16 @@
-# 网页后台「批量导入」上传了文件后自动运行：把 imports/ 里的 .md / .txt / .docx 转成作品。
-# 作品名和文件名都用上传的文件名；失败的文件会留在 imports/，原因写在 imports/_导入失败说明.txt。
+# 网页后台「批量导入」页面点「开始导入」时运行：把 imports/ 里的 .md / .txt / .docx / .zip 转成作品。
+# 作品名和文件名都用文件名；点按钮时填的配对、系列等信息用在这一批的每一篇上。
+# 失败的文件会留在 imports/，原因写在 imports/_导入失败说明.txt。
+# 只上传不点按钮的话不会导入，所以可以先慢慢传、最后一起导入。
 name: 批量导入作品
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'imports/**'
   workflow_dispatch:
+    inputs:
+      payload:
+        description: 后台传来的作品信息（从 GitHub 手动运行时填 {} 就行）
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -33,7 +36,7 @@ jobs:
       - name: 导入
         run: node scripts/import-uploads.mjs
         env:
-          TZ: Asia/Shanghai
+          PAGES_CMS_PAYLOAD: ${{ inputs.payload }}
 
       - name: 提交导入结果
         id: commit
