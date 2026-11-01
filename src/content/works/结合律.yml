@@ -5,6 +5,7 @@ cp:
 updated: 2024-03-06
 series: 度量空间
 seriesOrder: 1
+status: finished
 chapters:
   - title: 结合律
     body: |

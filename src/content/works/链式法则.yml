@@ -5,6 +5,7 @@ cp:
 updated: 2024-08-11
 series: 度量空间
 seriesOrder: 2
+status: finished
 chapters:
   - title: 链式法则
     body: |
