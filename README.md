@@ -1,6 +1,6 @@
 # 1mether 的同人站
 
-https://1mether-fanfic.pages.dev - Cloudflare Pages 会自动部署。
+网址：<https://fanfic.1mether.me>（Cloudflare Pages 自动部署）。
 
 模板使用 [fanfic-site-template](https://github.com/locoda/fanfic-site-template) ，怎么写作品、改设置都看模板的 README。
 
