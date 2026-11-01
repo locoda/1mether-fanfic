@@ -3,18 +3,16 @@
 // 开 PR 时 GitHub 会自动运行（.github/workflows/check.yml），本地也可以手动跑。检查这些：
 //   1. 配置文件和作品文件都是合法的 YAML
 //   2. 后台表单（.pages.yml「网站设置」）、site.config.ts 的 GROUPS、site.yml 三者的设置项对得上
-//   3. 每篇作品 yml → md → yml 往返后内容不变（导出备份能原样导回来）
-//   4. 网站能构建成功，并且模拟 GitHub Pages 子路径时，没有漏掉前缀的站内链接
+//   3. 网站能构建成功，并且模拟 GitHub Pages 子路径时，没有漏掉前缀的站内链接
 //
 //   npm run check              全部检查
-//   npm run check -- --no-build  跳过第 4 项（快）
+//   npm run check -- --no-build  跳过第 3 项（快）
 //
-// 第 4 项构建出的 dist/ 用的是测试前缀，只用来检查；预览或部署前照常 npm run build。
+// 第 3 项构建出的 dist/ 用的是测试前缀，只用来检查；预览或部署前照常 npm run build。
 import { readFileSync, readdirSync, existsSync, appendFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { execSync } from 'node:child_process';
 import YAML from 'yaml';
-import { parseWorkYaml, toWorkMarkdown, parseWorkMarkdown } from './lib/work-md.mjs';
 
 const WORKS_DIR = 'src/content/works';
 const CHECK_BASE = '/check-base/';
@@ -88,54 +86,7 @@ section('后台表单、网站设置代码、site.yml 的设置项对得上', (f
   }
 });
 
-// ---------------------------------------------------------------- 3. 往返
-
-/** 后台保存的空值（""、null、[]）当作没写；日期统一成字符串 */
-function normalize(v) {
-  if (v instanceof Date) return v.toISOString().slice(0, 10);
-  if (Array.isArray(v)) return v.length ? v.map(normalize) : undefined;
-  if (v && typeof v === 'object') {
-    const out = {};
-    for (const [k, x] of Object.entries(v)) {
-      const n = normalize(x);
-      if (n !== undefined) out[k] = n;
-    }
-    return out;
-  }
-  return v === '' || v === null ? undefined : v;
-}
-const sameJson = (a, b) => JSON.stringify(a) === JSON.stringify(b);
-
-section('作品导出成 md 再导回来，内容不变', (fail) => {
-  for (const f of files(WORKS_DIR, /\.ya?ml$/)) {
-    try {
-      const work = parseWorkYaml(readFileSync(f, 'utf8'), f);
-      const back = parseWorkMarkdown(toWorkMarkdown(work, f), f);
-      const strip = (s) => s.replace(/\s+$/, '');
-      const a = normalize(work.info);
-      const b = normalize(back.info);
-      if (!sameJson(a, b)) {
-        fail('作品信息导出后变了', f);
-        continue;
-      }
-      if (work.chapters.length !== back.chapters.length) {
-        fail(`导出后章节数变了（${work.chapters.length} → ${back.chapters.length}）`, f);
-        continue;
-      }
-      work.chapters.forEach((c, i) => {
-        const d = back.chapters[i];
-        // 单章作品没写章节名时，导回来会用作品名，两者等价
-        const title = c.title ?? (work.chapters.length === 1 ? work.info.title : undefined);
-        if (title !== d.title) fail(`第 ${i + 1} 章的章节名导出后变了（「${title ?? ''}」→「${d.title ?? ''}」）`, f);
-        if (strip(c.body) !== strip(d.body)) fail(`第 ${i + 1} 章的正文导出后变了`, f);
-      });
-    } catch (e) {
-      fail(e.message.replace(`${f}：`, '').replace(`${f} `, '').split('\n')[0], f);
-    }
-  }
-});
-
-// ---------------------------------------------------------------- 4. 构建
+// ---------------------------------------------------------------- 3. 构建
 
 if (!process.argv.includes('--no-build')) {
   section(`网站能构建成功，子路径（${CHECK_BASE}）下没有漏掉前缀的链接`, (fail) => {

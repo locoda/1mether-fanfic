@@ -27,7 +27,7 @@
 
 | 文件 | 触发 | 做什么 |
 |---|---|---|
-| `check.yml` | 开 PR、往 PR 推提交、手动 | `npm run check`：YAML、设置项、导入导出往返、子路径构建（见 development.md） |
+| `check.yml` | 开 PR、往 PR 推提交、手动 | `npm run check`：YAML、设置项、子路径构建（见 development.md） |
 | `deploy.yml` | 推送到 main、手动 | check → 构建 → 部署到 GitHub Pages |
 | `import.yml` | 后台「批量导入」页面的「开始导入」按钮（`workflow_dispatch`） | 跑 `import-uploads.mjs`，提交导入结果，再触发 `deploy.yml` |
 | `rename-works.yml` | 每天北京时间 04:17、手动 | 把后台新建的时间戳文件改名成「作品名.yml」 |

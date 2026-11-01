@@ -64,17 +64,16 @@ npm run check    # 自动检查，开 PR 时 GitHub 也会跑同一套
 
 1. 配置文件、工作流、作品文件都是合法的 YAML
 2. 后台表单（`.pages.yml` 的「网站设置」）和 `site.config.ts` 的 `GROUPS` 设置项完全一致；`site.yml` 里没有不认识的项（可以缺项）
-3. 每篇作品 yml → md → yml 往返后内容不变（空值、日期格式的差别不算）；正文里有一级标题也会在这里报出来
-4. 用测试前缀 `SITE_BASE=/check-base/` 构建成功，生成的 HTML / CSS 里没有漏掉前缀的站内链接
+3. 用测试前缀 `SITE_BASE=/check-base/` 构建成功，生成的 HTML / CSS 里没有漏掉前缀的站内链接
 
-`npm run check -- --no-build` 跳过第 4 项，几秒就跑完。第 4 项生成的 `dist/` 带测试前缀，预览前照常 `npm run build`。
+`npm run check -- --no-build` 跳过第 3 项，几秒就跑完。第 3 项生成的 `dist/` 带测试前缀，预览前照常 `npm run build`。
 
 自动检查管不到外观、Actions 和 Pages CMS 后台，下面这些按改动范围补做，PR 的 Test plan 里写清楚做了哪些、结果是什么。
 
 ### 按改动范围补做
 
 1. **写下 `npm run build` 的页数**（模板 3 篇示例作品是 15 页），和改动前对比
-2. **改了导入导出或 `work-md.mjs`**：自动检查只比较内容；要求文件逐字节不变时再做一次：
+2. **改了导入导出或 `work-md.mjs`**：所有作品做 yml → md → yml 往返，结果必须和原文件完全一致：
    ```
    cp -r src/content/works /tmp/orig && npm run export && npm run import -- export/*.md --force && diff -r /tmp/orig src/content/works
    ```
