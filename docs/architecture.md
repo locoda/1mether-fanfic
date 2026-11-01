@@ -36,8 +36,9 @@ scripts/import-uploads.mjs        后台「批量导入」：imports/ 里的文�
 scripts/rename-works.mjs          时间戳文件名 → 作品名.yml
 scripts/deploy-target.mjs         读 site.yml 的 info.githubPages，给工作流判断要不要部署
 scripts/release-name.mjs          「导出作品」的 zip 命名
+scripts/check.mjs                 npm run check：PR 自动检查的内容
 imports/                          后台「批量导入」的上传目录（平时只有 .gitkeep）
-.github/workflows/                deploy / import / rename-works / export-release，见 deployment.md
+.github/workflows/                check / deploy / import / rename-works / export-release，见 deployment.md
 .pages.yml                        Pages CMS 配置
 ```
 

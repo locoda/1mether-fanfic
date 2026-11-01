@@ -18,12 +18,16 @@
 - 在 Cloudflare 里连上仓库，构建命令 `npm run build`，输出目录 `dist`。之后每次推送 Cloudflare 自己构建部署，**仓库这边不需要任何开关**
 - 用 Cloudflare 的站要把 `info.githubPages` 设成 `false`，否则 GitHub Pages 工作流也会跑，而且因为没打开 Pages 会失败
 - 想暂停 Cloudflare 只能在 Cloudflare 后台操作。以前试过在构建里判断设置、故意让构建失败，太绕，删掉了
+- Cloudflare 会给每个分支自动生成预览网址（`<分支>.<项目>.pages.dev`），开 PR 前可以先看效果。GitHub Pages 没有预览
 - 以前用仓库变量 `DEPLOY=cloudflare` 控制，现在**不再读仓库变量**，只看 `site.yml`
 
 ## 工作流一览
 
+> 后台保存是直接提交到 main，不走 PR，所以不会触发自动检查。后台改坏了作品，`deploy.yml` 或 Cloudflare 构建会失败，线上保持上一版。
+
 | 文件 | 触发 | 做什么 |
 |---|---|---|
+| `check.yml` | 开 PR、往 PR 推提交、手动 | `npm run check`：YAML、设置项、导入导出往返、子路径构建（见 development.md） |
 | `deploy.yml` | 推送到 main、手动 | check → 构建 → 部署到 GitHub Pages |
 | `import.yml` | 后台「批量导入」页面的「开始导入」按钮（`workflow_dispatch`） | 跑 `import-uploads.mjs`，提交导入结果，再触发 `deploy.yml` |
 | `rename-works.yml` | 每天北京时间 04:17、手动 | 把后台新建的时间戳文件改名成「作品名.yml」 |

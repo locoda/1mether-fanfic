@@ -20,7 +20,7 @@
 | 文档 | 什么时候读 |
 |---|---|
 | [docs/architecture.md](docs/architecture.md) | 技术要点：技术栈、目录、数据流、**网址规则**、作品格式、网站设置、字体、导入导出 |
-| [docs/deployment.md](docs/deployment.md) | 部署和工作流：GitHub Pages / Cloudflare、四个 Actions 工作流、批量导入、**Pages CMS 的坑**、下游同步 |
+| [docs/deployment.md](docs/deployment.md) | 部署和工作流：GitHub Pages / Cloudflare、各个 Actions 工作流、批量导入、**Pages CMS 的坑**、下游同步 |
 | [docs/development.md](docs/development.md) | 二次开发：加开关、加字体、加导入格式的步骤，**改完要做的检查**，Git 和 PR 流程，写给用户的文字规范 |
 
 ## 不能破的规矩
@@ -32,6 +32,6 @@
 - 改 `.pages.yml` 前对照 Pages CMS 文档，写错整个后台打不开
 - 每个 PR 从最新的 main 新建分支；推送前确认上一个 PR 是否已合并，已合并就开新 PR
 - 同步模板到下游的 PR 必须用「Create a merge commit」合并
-- `npm run build` 必须通过；声称外观不变要截图逐像素对比（development.md）
+- `npm run check` 必须通过（开 PR 时 GitHub 也会自动跑）；声称外观不变要截图逐像素对比（development.md）
 - Actions 和 Pages CMS 本地跑不了，没验证过的要在 PR 和回复里明说
 - 写给用户的文字用中文，口语、直接，不要 AI 腔

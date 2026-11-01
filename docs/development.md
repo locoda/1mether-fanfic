@@ -8,6 +8,7 @@
 npm install
 npm run dev      # http://localhost:4321
 npm run build    # 生成到 dist/，模板 3 篇示例作品是 15 页
+npm run check    # 自动检查，开 PR 时 GitHub 也会跑同一套
 ```
 
 - 先确认你在哪个仓库：模板 `locoda/fanfic-site-template` 改代码；下游站点只改作品、`site.yml` 和站点自己的 README
@@ -25,11 +26,7 @@ npm run build    # 生成到 dist/，模板 3 篇示例作品是 15 页
 4. `README.md`：第四步的文字说明和「进阶」里对应分组的表格
 5. 页面里用 `site.features.xxx` 读
 
-改完检查 `.pages.yml` 每组的字段和 `site.yml` 每组的键完全一致，可以用这段：
-
-```
-node -e "const y=require('yaml'),fs=require('fs');const c=y.parse(fs.readFileSync('.pages.yml','utf8')).content.find(c=>c.path==='src/site.yml');const s=y.parse(fs.readFileSync('src/site.yml','utf8'));for(const g of c.fields)console.log(g.name,g.fields.map(f=>f.name).join()===Object.keys(s[g.name]).join()?'一致':'不一致')"
-```
+漏改哪一处，`npm run check` 会报出来（后台表单和 `GROUPS` 对不上、`site.yml` 里有不认识的项）。
 
 默认值为 `true` 的开关，同步到下游时要把它写进下游的 `site.yml`（原因见 deployment.md 的 Pages CMS 一节）。
 
@@ -61,18 +58,31 @@ node -e "const y=require('yaml'),fs=require('fs');const c=y.parse(fs.readFileSyn
 
 ## 改完要检查什么
 
-按改动范围选做，PR 的 Test plan 里写清楚做了哪些、结果是什么：
+### 自动检查（每次都要过）
 
-1. **`npm run build` 必须通过**，写下页数
-2. **改了导入导出或 `work-md.mjs`**：所有作品做 yml → md → yml 往返，结果必须和原文件完全一致：
+`npm run check`（`scripts/check.mjs`）。开 PR、往 PR 推新提交时，`.github/workflows/check.yml` 会在 GitHub 上跑同一套，结果显示在 PR 页面（绿勾 / 红叉，点 Details 看哪里没过）。检查这些：
+
+1. 配置文件、工作流、作品文件都是合法的 YAML
+2. 后台表单（`.pages.yml` 的「网站设置」）和 `site.config.ts` 的 `GROUPS` 设置项完全一致；`site.yml` 里没有不认识的项（可以缺项）
+3. 每篇作品 yml → md → yml 往返后内容不变（空值、日期格式的差别不算）；正文里有一级标题也会在这里报出来
+4. 用测试前缀 `SITE_BASE=/check-base/` 构建成功，生成的 HTML / CSS 里没有漏掉前缀的站内链接
+
+`npm run check -- --no-build` 跳过第 4 项，几秒就跑完。第 4 项生成的 `dist/` 带测试前缀，预览前照常 `npm run build`。
+
+自动检查管不到外观、Actions 和 Pages CMS 后台，下面这些按改动范围补做，PR 的 Test plan 里写清楚做了哪些、结果是什么。
+
+### 按改动范围补做
+
+1. **写下 `npm run build` 的页数**（模板 3 篇示例作品是 15 页），和改动前对比
+2. **改了导入导出或 `work-md.mjs`**：自动检查只比较内容；要求文件逐字节不变时再做一次：
    ```
    cp -r src/content/works /tmp/orig && npm run export && npm run import -- export/*.md --force && diff -r /tmp/orig src/content/works
    ```
 3. **改了页面或样式，声称外观不变**：用改动前的版本（比如 `git worktree add /tmp/base origin/main`，在里面构建）和改动后各构建一份，用 Playwright 截全页图逐像素比较。组合是电脑 1280px / 手机 390px × 浅色 / 深色，页面至少包括首页、章节页、配对、系列。HTML 不一样不代表外观变了（比如 `class=""` 和没有 class），以截图为准
-4. **改了链接或部署**：`SITE_BASE=/<仓库名>/ npm run build`，确认没有不带前缀的站内链接和字体路径
+4. **改了链接或部署**：自动检查已经查子路径；部署方式本身的改动要在 GitHub 上实际跑一次
 5. **加了依赖**：`npm audit` 要是 0；选发布超过两周的版本
-6. **改了工作流**：至少确认是合法的 YAML（`node -e "require('yaml').parse(require('fs').readFileSync('<文件>','utf8'))"`）；PR 里注明需要用户在 GitHub 上实际运行
-7. **改了 `.pages.yml`**：合法的 YAML、对照 Pages CMS 文档确认字段写法；PR 里请用户在后台打开确认
+6. **改了工作流**：自动检查只查 YAML 合法；PR 里注明需要用户在 GitHub 上实际运行
+7. **改了 `.pages.yml`**：对照 Pages CMS 文档确认字段写法；PR 里请用户在后台打开确认
 
 截图对比可以用这样的脚本（Playwright 已装好时 `require('playwright')` 直接能用）：
 
