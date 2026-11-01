@@ -25,6 +25,8 @@ const SiteSchema = z.object({
   features: opt(
     z.object({
       leadStory: opt(z.boolean(), true),
+      leadMode: opt(z.enum(['latest', 'pick']), 'latest'),
+      leadWork: opt(z.string(), ''),
       dropCap: opt(z.boolean(), true),
       endMark: opt(z.boolean(), true),
       progressBar: opt(z.boolean(), true),
@@ -53,7 +55,7 @@ const SiteSchema = z.object({
 // 旧版不分组的写法（title、features 直接写在最外层）也照样能读。
 const GROUPS = {
   info: ['title', 'tagline', 'author', 'description', 'lang', 'links', 'githubPages'],
-  display: ['font', 'darkMode', 'perPage', 'leadStory', 'dropCap', 'endMark', 'progressBar', 'chapterPicker', 'keyboardNav'],
+  display: ['font', 'darkMode', 'perPage', 'leadStory', 'leadMode', 'leadWork', 'dropCap', 'endMark', 'progressBar', 'chapterPicker', 'keyboardNav'],
   works: ['customAuthor', 'byline', 'status', 'updatedDate', 'wordCount', 'readingTime', 'readingSpeed', 'autoSummary', 'related', 'allowCopy'],
 } as const;
 const TOP_LEVEL = new Set(['title', 'tagline', 'author', 'description', 'lang', 'links', 'githubPages', 'perPage', 'readingSpeed']);
@@ -118,6 +120,7 @@ export const ui = {
   viewSeries: '查看整个系列',
   viewCp: (cp: string) => `${cp}全部作品`,
   latest: '最新',
+  featured: '推荐',
   byline: (name: string) => `文 / ${name}`,
   authorNote: '作者注',
   empty: '还没有作品。',

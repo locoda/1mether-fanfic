@@ -191,7 +191,23 @@ content:
                 - { name: "system", label: 只跟随系统 }
                 - { name: "off", label: 始终浅色 }
           - { name: perPage, label: 每页作品数, type: number }
-          - { name: leadStory, label: 首页头条（最新一篇做成大标题）, type: boolean }
+          - { name: leadStory, label: 首页头条（把一篇作品做成大标题）, type: boolean }
+          - name: leadMode
+            label: 头条用哪篇
+            type: select
+            options:
+              values:
+                - { name: "latest", label: 最新一篇 }
+                - { name: "pick", label: 指定一篇 }
+          - name: leadWork
+            label: 指定的头条作品
+            type: reference
+            description: 「头条用哪篇」选「指定一篇」时才用。改了这篇的作品名要回来重新选
+            options:
+              collection: works
+              search: title
+              value: "{title}"
+              label: "{title}"
           - { name: dropCap, label: 首字放大, type: boolean }
           - { name: endMark, label: 完结章文末 ♦, type: boolean }
           - { name: progressBar, label: 阅读进度条, type: boolean }

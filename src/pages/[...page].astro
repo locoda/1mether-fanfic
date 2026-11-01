@@ -4,23 +4,28 @@ import Base from '../layouts/Base.astro';
 import WorkItem from '../components/WorkItem.astro';
 import Pagination from '../components/Pagination.astro';
 import { site, ui } from '../site.config';
-import { loadWorks, cpUrl, seriesUrl, url, fmtDate, type WorkInfo } from '../lib/works';
+import { loadWorks, pinnedLead, cpUrl, seriesUrl, url, fmtDate, type WorkInfo } from '../lib/works';
 
 export const getStaticPaths = (async ({ paginate }) => {
   const works = await loadWorks();
-  return paginate(works, { pageSize: site.perPage });
+  // 头条指定了某一篇时，把它挪到最前面：首页第一页的头条就是它，下面的列表里不再重复
+  const pick = pinnedLead(works);
+  const ordered = pick ? [pick, ...works.filter((w) => w !== pick)] : works;
+  return paginate(ordered, { pageSize: site.perPage });
 }) satisfies GetStaticPaths;
 
 const { page } = Astro.props as { page: Page<WorkInfo> };
 const lead = site.features.leadStory && page.currentPage === 1 ? page.data[0] : undefined;
 const rest = lead ? page.data.slice(1) : page.data;
+// 指定的头条不一定是最新的，标签改成「推荐」（找不到指定作品、退回最新一篇时仍是「最新」）
+const leadLabel = lead && lead === pinnedLead(await loadWorks()) ? ui.featured : ui.latest;
 const href = (n: number) => url(n > 1 ? `${n}/` : '');
 ---
 <Base section="home" title={page.currentPage > 1 ? `${ui.allWorks} · ${page.currentPage}` : undefined}>
   {page.total === 0 && <p>{ui.empty}</p>}
   {lead && (
     <article class="lead-story">
-      <span class="label">{ui.latest}</span>
+      <span class="label">{leadLabel}</span>
       {(lead.cps.length > 0 || lead.series) && (
         <p class="rubric">
           {lead.cps.map((cp, i) => <>{i > 0 && <span class="sep">/</span>}<a href={cpUrl(cp)}>{cp}</a></>)}
