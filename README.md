@@ -196,6 +196,8 @@ GitHub 用来存放你的网站和作品，网站也直接放在 GitHub Pages �
 
 下面这些需要在电脑上装 [Node.js](https://nodejs.org)（22.23.4 以上，版本写在 `.node-version`）和 git。
 
+想改代码、加功能的话，先看 [docs/](docs/)：[技术要点](docs/architecture.md)、[部署和工作流](docs/deployment.md)、[二次开发指南](docs/development.md)。
+
 ### 在电脑上预览
 
 ```
