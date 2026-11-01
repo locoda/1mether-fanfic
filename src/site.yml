@@ -28,8 +28,12 @@ display:
   darkMode: auto
   # 每页显示多少篇作品（首页、配对页）
   perPage: 20
-  # 首页第一页把最新一篇做成大标题头条
+  # 首页第一页把一篇作品做成大标题头条（用哪篇见 leadMode）
   leadStory: true
+  # 头条用哪篇：latest 最新一篇；pick 指定一篇（在下面的 leadWork 写作品名）
+  leadMode: latest
+  # 指定的头条作品名，leadMode 是 pick 时才用；找不到这篇就退回最新一篇
+  leadWork: ""
   # 正文第一个字放大（首字下沉）
   dropCap: true
   # 完结章最后一段末尾加 ♦

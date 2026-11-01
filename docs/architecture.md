@@ -95,4 +95,5 @@ imports/                          后台「批量导入」的上传目录（平�
 - 功能开关都在 `site.features`，页面里用 `const f = site.features` 读
 - 章节页底部的内联脚本负责进度条、选章菜单、键盘翻章、禁止复制（`allowCopy` 关掉时给 `<article>` 加 `no-copy`，CSS 禁选中，脚本拦 copy / cut / contextmenu / dragstart / selectstart）
 - 深色模式：`darkMode` 为 `auto` 时显示切换按钮，选择存在 localStorage；`system` 只跟随系统；`off` 始终浅色
+- 首页头条：`leadStory` 开着时，第一页第一篇做成大标题。`leadMode: pick` 时用 `works.ts` 的 `pinnedLead()` 按作品名（`leadWork`）找到那篇，挪到列表最前面，标签从「最新」换成「推荐」；找不到就退回最新一篇。按作品名而不是文件名找，是因为后台新建的作品每天凌晨会改一次文件名
 - 页面至少一屏高（`body` 纵向 flex + `min-height: 100dvh`，`main` 撑满），内容少时页脚贴底
