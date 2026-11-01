@@ -8,10 +8,10 @@ info:
 display:
   font: sypxzs
   darkMode: auto
-  perPage: 20
-  leadStory: true
+  perPage: 10
+  leadStory: false
   dropCap: false
-  endMark: false
+  endMark: true
   progressBar: true
   chapterPicker: true
   keyboardNav: true
