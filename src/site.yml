@@ -9,9 +9,9 @@ display:
   font: sypxzs
   darkMode: auto
   perPage: 10
-  leadStory: false
-  leadMode: latest
-  leadWork: ""
+  leadStory: true
+  leadMode: pick
+  leadWork: 迷路指南
   dropCap: false
   endMark: true
   progressBar: true
