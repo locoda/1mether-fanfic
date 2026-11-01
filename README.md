@@ -3,7 +3,7 @@
 给自己搭一个放同人文的个人网站：杂志式排版，按 CP、系列整理作品，多章作品可以一章一页地读。**不用会写代码**，全程在网页上点点就能建好，以后在网页后台写文、改设置。网站免费放在 GitHub Pages 上，不用买服务器。
 
 <p>
-  <img src="docs/screenshot-chapter.jpg" alt="手机上的章节页" width="28%">
+  <img src="docs/screenshot.jpg" alt="电脑上的首页和手机上的章节页">
 </p>
 
 在线看看效果：<https://locoda.github.io/fanfic-site-template/>
