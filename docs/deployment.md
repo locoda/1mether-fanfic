@@ -76,6 +76,7 @@ GitHub 的规定：工作流用默认的 `GITHUB_TOKEN` 推送的提交，不会
 - **boolean 字段在文件里缺失时，表单可能显示成未勾选**，用户一保存就会写成 `false`。所以新增默认为 `true` 的开关时，下游同步要把这一项写进下游的 `site.yml`
 - YAML 里的 `off` `on` `yes` `no` 在旧解析器里会变成布尔值，select 选项的 `name` 要加引号
 - 媒体上传：`rename: false` 保留原文件名
+- `reference` 字段（「指定的头条作品」）从作品集合里选一篇，`value: "{title}"` 存作品名。还没在真实后台里验证过
 
 ## 下游站点同步模板
 
@@ -97,6 +98,7 @@ git merge template/main        # 第一次同步要加 --allow-unrelated-histori
 ## 还没在真实环境验证过的
 
 - 「导出作品」工作流
+- 网站设置里「指定的头条作品」下拉框（Pages CMS 的 reference 字段）
 - 改名工作流（`rename-works.yml`）
 - 打开一篇原本没有日期的旧作品时，后台会不会自动填上当天
 - Pages CMS 官方托管版是否收费，文档里没写
