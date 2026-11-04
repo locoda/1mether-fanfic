@@ -22,7 +22,7 @@ npm run check    # 自动检查，开 PR 时 GitHub 也会跑同一套
 
 1. `src/site.yml`：在对应分组（`info` / `display` / `works`）加默认值和一行注释
 2. `src/site.config.ts`：schema 里加 `opt(z.boolean(), 默认值)`，并把键名加进 `GROUPS` 对应的分组
-3. `.pages.yml`：「网站设置」对应分组里加字段；说明写在 `description`（后台保存会删掉 site.yml 的注释）
+3. `.pages.yml`：「网站设置」对应分组里加字段，只写短标签，说明写进 README
 4. `README.md`：第四步的文字说明和「进阶」里对应分组的表格
 5. 页面里用 `site.features.xxx` 读
 
@@ -115,7 +115,7 @@ const { chromium } = require('playwright');
 - 网站上不放作品下载按钮；打包下载只通过手动运行的「导出作品」工作流，默认发成草稿
 - 不要自动导出 md 并提交进仓库（试过，被撤掉了）；`export/` 不进 git
 - 不要用 Google Fonts 或任何国内访问不了的外部资源
-- 不要在作品列表或后台里加重复、啰嗦的提示文字
+- 不要在作品列表或后台里加重复、啰嗦的提示文字。后台字段只写短标签，不加括号说明，也不写 `description`；解释写进 README
 - 不要做 AO3 HTML 导入（做过，被删掉了）
 
 ## README 和《使用说明》
