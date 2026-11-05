@@ -20,10 +20,10 @@ media:
         workflow: import.yml
         confirm:
           title: 导入这些文件？
-          message: 文件名就是作品名。下面填的信息会用在这一批的每一篇上，不填就留空，导入后也可以在「作品」里改。
+          message: 文件名就是作品名。
           button: 开始导入
         fields:
-          - { name: cp, label: 配对（多个用逗号隔开）, type: text }
+          - { name: cp, label: 配对, type: text }
           - { name: series, label: 系列, type: text }
           - name: status
             label: 状态
@@ -33,8 +33,8 @@ media:
               - { label: 不填, value: "none" }
               - { label: 连载中, value: "ongoing" }
               - { label: 已完结, value: "finished" }
-          - { name: updated, label: 更新日期（如 2026-10-31，可以不填）, type: text }
-          - { name: author, label: 作者名（打开「每篇作品单独写作者名」才有用）, type: text }
+          - { name: updated, label: 更新日期, type: text }
+          - { name: author, label: 作者名, type: text }
 
 content:
   - name: works
@@ -65,33 +65,28 @@ content:
       - name: author
         label: 作者名
         type: string
-        description: 在网站设置里打开「每篇作品单独写作者名」后才生效；不填就用网站设置里的作者名
 
       - name: cp
         label: CP
         type: string
         list: true
-        description: 可以填多个
 
       - name: updated
         label: 更新日期
         type: date
         options:
           format: yyyy-MM-dd
-        description: 决定首页排序，新建时默认是当天；可以清空，没有日期的排在最后
 
       - name: summary
         label: 简介
         type: text
-        description: 不填就自动取第一章开头
 
       - name: series
         label: 系列
         type: string
-        description: 系列名完全相同的作品会自动归在一起
 
       - name: seriesOrder
-        label: 系列里的第几篇
+        label: 系列顺序
         type: number
 
       - name: status
@@ -101,7 +96,6 @@ content:
           values:
             - { name: ongoing, label: 连载中 }
             - { name: finished, label: 已完结 }
-        description: 不填就不显示
 
       - name: chapters
         label: 章节
@@ -116,13 +110,11 @@ content:
           - name: title
             label: 章节名
             type: string
-            description: 单章作品可以不填
 
           - name: body
             label: 正文
             type: text
             required: true
-            description: 空一行是分段
 
   # ---------- 网站设置：分成网站信息、显示设置、作品设置三组 ----------
   - name: settings
@@ -145,27 +137,23 @@ content:
           - name: author
             label: 作者名
             type: string
-            description: 用在署名和页脚；打开「每篇作品单独写作者名」后，是没填作者的作品的默认值
           - name: description
             label: 网站简介
             type: text
-            description: 搜索引擎和分享链接时显示
           - name: lang
             label: 页面语言
             type: string
-            description: 一般不用改，简体中文是 zh-CN
           - name: links
             label: 页脚链接
             type: object
             list: true
             fields:
-              - { name: label, label: 名称（如 AO3、微博）, type: string }
+              - { name: label, label: 名称, type: string }
               - { name: href, label: 网址, type: string }
           - name: githubPages
             label: 部署到 GitHub Pages
             type: boolean
             default: true
-            description: 用 Cloudflare Pages 的话关掉
 
       - name: display
         label: 显示设置
@@ -176,55 +164,54 @@ content:
             type: select
             options:
               values:
-                - { name: "sypxzs", label: 思源屏显臻宋（现代宋体，屏幕上清晰） }
-                - { name: "lxgw-neo-zhi-song", label: 霞鹜新致宋（清秀的明朝体） }
-                - { name: "jhlst", label: 京华老宋体（民国老报刊风） }
-                - { name: "zqfs", label: 朱雀仿宋（清瘦文气） }
-                - { name: "lxgwwenkai", label: 霞鹜文楷（楷体） }
-                - { name: "system", label: 系统自带宋体（不下载字体，加载最快） }
+                - { name: "sypxzs", label: 思源屏显臻宋 }
+                - { name: "lxgw-neo-zhi-song", label: 霞鹜新致宋 }
+                - { name: "jhlst", label: 京华老宋体 }
+                - { name: "zqfs", label: 朱雀仿宋 }
+                - { name: "lxgwwenkai", label: 霞鹜文楷 }
+                - { name: "system", label: 系统字体 }
           - name: darkMode
             label: 深色模式
             type: select
             options:
               values:
-                - { name: "auto", label: 跟随系统，并显示切换按钮 }
-                - { name: "system", label: 只跟随系统 }
+                - { name: "auto", label: 可切换 }
+                - { name: "system", label: 跟随系统 }
                 - { name: "off", label: 始终浅色 }
           - { name: perPage, label: 每页作品数, type: number }
-          - { name: leadStory, label: 首页头条（把一篇作品做成大标题）, type: boolean }
+          - { name: leadStory, label: 首页头条, type: boolean }
           - name: leadMode
-            label: 头条用哪篇
+            label: 头条
             type: select
             options:
               values:
                 - { name: "latest", label: 最新一篇 }
                 - { name: "pick", label: 指定一篇 }
           - name: leadWork
-            label: 指定的头条作品
+            label: 指定作品
             type: reference
-            description: 「头条用哪篇」选「指定一篇」时才用。改了这篇的作品名要回来重新选
             options:
               collection: works
               search: title
               value: "{title}"
               label: "{title}"
           - { name: dropCap, label: 首字放大, type: boolean }
-          - { name: endMark, label: 完结章文末 ♦, type: boolean }
+          - { name: endMark, label: 文末 ♦, type: boolean }
           - { name: progressBar, label: 阅读进度条, type: boolean }
-          - { name: chapterPicker, label: 顶部选章菜单, type: boolean }
-          - { name: keyboardNav, label: 键盘 ← → 翻章, type: boolean }
+          - { name: chapterPicker, label: 选章菜单, type: boolean }
+          - { name: keyboardNav, label: 键盘翻章, type: boolean }
 
       - name: works
         label: 作品设置
         type: object
         fields:
-          - { name: customAuthor, label: 每篇作品单独写作者名（合集、合志用）, type: boolean }
-          - { name: byline, label: 「文 / 作者」署名, type: boolean }
-          - { name: status, label: 显示连载中 / 已完结, type: boolean }
-          - { name: updatedDate, label: 显示更新日期, type: boolean }
-          - { name: wordCount, label: 显示字数, type: boolean }
-          - { name: readingTime, label: 显示阅读时长, type: boolean }
-          - { name: readingSpeed, label: 阅读速度（字/分钟）, type: number, description: 用来估算阅读时长 }
-          - { name: autoSummary, label: 没写简介时自动取正文开头, type: boolean }
-          - { name: related, label: 文末同 CP 推荐, type: boolean }
-          - { name: allowCopy, label: 允许复制正文, type: boolean, description: 关掉后读者选不中文字、不能复制和右键。挡得住随手复制，挡不住看网页源代码或截图 }
+          - { name: customAuthor, label: 每篇单独写作者名, type: boolean }
+          - { name: byline, label: 署名, type: boolean }
+          - { name: status, label: 连载状态, type: boolean }
+          - { name: updatedDate, label: 更新日期, type: boolean }
+          - { name: wordCount, label: 字数, type: boolean }
+          - { name: readingTime, label: 阅读时长, type: boolean }
+          - { name: readingSpeed, label: 每分钟阅读字数, type: number }
+          - { name: autoSummary, label: 自动简介, type: boolean }
+          - { name: related, label: 同 CP 推荐, type: boolean }
+          - { name: allowCopy, label: 允许复制, type: boolean }
